@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Your Course — The Common App Playbook</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --ink: #1a1410; --ink-muted: #5a5249; --cream: #faf8f4;
+    --warm: #fff9f2; --accent: #c4602a; --accent-light: #f0ddd1;
+    --accent-dark: #8c3f15; --gold: #c9a84c; --gold-light: #f5edce;
+    --border: rgba(26,20,16,0.12);
+    --serif: 'Playfair Display', serif; --sans: 'DM Sans', sans-serif;
+  }
+  html { scroll-behavior: smooth; }
+  body { font-family: var(--sans); background: var(--warm); color: var(--ink); }
+
+  /* ── Nav ── */
+  .nav {
+    position: sticky; top: 0; z-index: 100;
+    background: var(--ink); padding: 0 2rem;
+    display: flex; align-items: center; justify-content: space-between; height: 60px;
+  }
+  .nav-logo { font-family: var(--serif); font-size: 1rem; font-weight: 700; color: var(--cream); text-decoration: none; }
+  .nav-right { display: flex; align-items: center; gap: 1.5rem; }
+  .nav-email { font-size: 0.82rem; color: rgba(250,248,244,0.45); }
+  .logout-btn {
+    font-size: 0.82rem; color: rgba(250,248,244,0.5); background: none;
+    border: 1px solid rgba(255,255,255,0.15); border-radius: 6px;
+    padding: 0.35rem 0.8rem; cursor: pointer; transition: all 0.2s;
+  }
+  .logout-btn:hover { color: var(--cream); border-color: rgba(255,255,255,0.35); }
+
+  /* ── Layout ── */
+  .layout { display: grid; grid-template-columns: 280px 1fr; min-height: calc(100vh - 60px); }
+
+  /* ── Sidebar ── */
+  .sidebar {
+    background: var(--cream); border-right: 1px solid var(--border);
+    padding: 2rem 0; position: sticky; top: 60px; height: calc(100vh - 60px);
+    overflow-y: auto;
+  }
+  .sidebar-header { padding: 0 1.5rem 1rem; border-bottom: 1px solid var(--border); margin-bottom: 1rem; }
+  .sidebar-header h2 { font-family: var(--serif); font-size: 0.95rem; font-weight: 700; color: var(--ink); }
+  .progress-bar { height: 4px; background: var(--border); border-radius: 2px; margin-top: 0.75rem; overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--accent); border-radius: 2px; transition: width 0.4s ease; }
+  .progress-text { font-size: 0.75rem; color: var(--ink-muted); margin-top: 0.4rem; }
+
+  .module-list { list-style: none; }
+  .module-item {
+    display: flex; align-items: center; gap: 0.75rem;
+    padding: 0.7rem 1.5rem; cursor: pointer;
+    border-left: 3px solid transparent; transition: all 0.15s;
+    font-size: 0.88rem; color: var(--ink-muted);
+  }
+  .module-item:hover { background: rgba(196,96,42,0.06); color: var(--ink); }
+  .module-item.active { border-left-color: var(--accent); background: var(--accent-light); color: var(--accent-dark); font-weight: 500; }
+  .module-item.completed { color: var(--ink); }
+  .module-check {
+    width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.65rem; flex-shrink: 0; transition: all 0.2s;
+  }
+  .module-item.completed .module-check { background: #3a9a5c; border-color: #3a9a5c; color: #fff; }
+  .module-item.active .module-check { border-color: var(--accent); }
+  .module-title { flex: 1; line-height: 1.3; }
+
+  /* ── Main content ── */
+  .main { padding: 3rem 4rem; max-width: 800px; }
+  .lesson-header { margin-bottom: 2.5rem; }
+  .lesson-tag {
+    font-size: 0.72rem; letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--accent); margin-bottom: 0.6rem; display: block;
+  }
+  .lesson-header h1 {
+    font-family: var(--serif); font-size: 2.2rem; font-weight: 900;
+    line-height: 1.1; letter-spacing: -0.02em; margin-bottom: 0.8rem;
+  }
+  .lesson-header p { font-size: 1.05rem; color: var(--ink-muted); line-height: 1.7; }
+
+  /* ── Lesson content ── */
+  .lesson-body { font-size: 1rem; line-height: 1.8; color: var(--ink); }
+  .lesson-body h2 {
+    font-family: var(--serif); font-size: 1.4rem; font-weight: 700;
+    margin: 2rem 0 0.8rem; color: var(--ink);
+  }
+  .lesson-body h3 { font-size: 1.1rem; font-weight: 500; margin: 1.5rem 0 0.6rem; }
+  .lesson-body p { margin-bottom: 1.2rem; }
+  .lesson-body ul, .lesson-body ol { padding-left: 1.5rem; margin-bottom: 1.2rem; }
+  .lesson-body li { margin-bottom: 0.5rem; }
+  .lesson-body blockquote {
+    border-left: 3px solid var(--accent); padding: 1rem 1.5rem;
+    background: var(--accent-light); border-radius: 0 8px 8px 0;
+    margin: 1.5rem 0; font-style: italic;
+  }
+  .lesson-body .callout {
+    background: var(--gold-light); border: 1px solid rgba(201,168,76,0.3);
+    border-radius: 10px; padding: 1.25rem 1.5rem; margin: 1.5rem 0;
+  }
+  .lesson-body .callout strong { color: #7a5c0a; display: block; margin-bottom: 0.4rem; font-style: normal; }
+
+  /* ── Footer nav ── */
+  .lesson-footer {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 2.5rem 0; margin-top: 2.5rem; border-top: 1px solid var(--border);
+  }
+  .nav-btn {
+    padding: 0.8rem 1.5rem; border-radius: 8px; font-family: var(--sans);
+    font-size: 0.9rem; font-weight: 500; cursor: pointer; transition: all 0.2s;
+    text-decoration: none; display: inline-block;
+  }
+  .nav-btn-prev { border: 1px solid var(--border); background: transparent; color: var(--ink-muted); }
+  .nav-btn-prev:hover { border-color: var(--ink); color: var(--ink); }
+  .nav-btn-next { background: var(--accent); border: none; color: #fff; }
+  .nav-btn-next:hover { background: var(--accent-dark); }
+  .nav-btn-next.complete { background: #3a9a5c; }
+  .nav-btn-next.complete:hover { background: #2d7a48; }
+  .nav-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  @media (max-width: 900px) {
+    .layout { grid-template-columns: 1fr; }
+    .sidebar { position: static; height: auto; }
+    .main { padding: 2rem; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="#" class="nav-logo">The Common App Playbook</a>
+  <div class="nav-right">
+    <span class="nav-email" id="userEmail"></span>
+    <button class="logout-btn" onclick="logout()">Sign out</button>
+  </div>
+</nav>
+
+<div class="layout">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <h2>Course Progress</h2>
+      <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+      <p class="progress-text" id="progressText">0 of 8 modules complete</p>
+    </div>
+    <ul class="module-list" id="moduleList"></ul>
+  </aside>
+
+  <!-- Main lesson area -->
+  <main class="main" id="mainContent"></main>
+</div>
+
+<script>
+// ── Course Data ────────────────────────────────────────────────────────────────
+const modules = [
+  {
+    id: 1,
+    title: "Introduction & Strategy",
+    tag: "Module 01",
+    intro: "Get the big picture on how the Common App works and how to approach the entire process strategically.",
+    content: `
+      <h2>What Colleges Are Really Looking For</h2>
+      <p>The Common App is not a form — it's a story. Admissions officers read thousands of applications every cycle, and they're not just tallying GPAs and test scores. They're asking: <em>Who is this person? What will they contribute to our campus?</em></p>
+      <p>Understanding this shift changes how you approach every single section. You're not checking boxes — you're building a portrait of yourself that's coherent, compelling, and honest.</p>
+
+      <div class="callout"><strong>🎯 Core principle</strong>Your application should answer one question: why are YOU the right fit for this school — and why is this school the right fit for you?</div>
+
+      <h2>Timeline: Working Backwards from Deadlines</h2>
+      <p>Most Early Decision/Early Action deadlines fall around <strong>November 1–15</strong>. Regular Decision is typically <strong>January 1</strong>. Here's how to work backwards:</p>
+      <ul>
+        <li><strong>August–September:</strong> Finalize your college list, start brainstorming essays</li>
+        <li><strong>September–October:</strong> Write and revise your personal essay, request recommendations</li>
+        <li><strong>October:</strong> Complete all supplemental essays, finalize activities section</li>
+        <li><strong>Late October:</strong> Final review, submit ED/EA applications</li>
+        <li><strong>November–December:</strong> Complete RD applications</li>
+      </ul>
+
+      <h2>The 5 Most Common Mistakes (Avoid These)</h2>
+      <ol>
+        <li><strong>Starting too late</strong> — The personal essay alone takes most students 4–6 weeks of real work.</li>
+        <li><strong>Writing for what you think they want to hear</strong> — Authenticity stands out. Generic doesn't.</li>
+        <li><strong>Treating the activities section as a resume dump</strong> — You have 150 characters. Every word has to work.</li>
+        <li><strong>Ignoring the "Why Us" essays</strong> — These are easier to bomb than the personal statement.</li>
+        <li><strong>Not asking for feedback</strong> — Get at least two trusted readers on your essays before submitting.</li>
+      </ol>
+
+      <blockquote>"The goal is not to write what you think the admissions officer wants to read. The goal is to write something true enough that they can't forget it."</blockquote>
+
+      <h2>Your Assignment for This Module</h2>
+      <p>Before moving on, do this: open a blank document and write a single paragraph — without editing yourself — answering this question:</p>
+      <p><em>"If I could tell an admissions officer one thing about myself that isn't anywhere else in my application, what would it be?"</em></p>
+      <p>Keep it. You'll come back to it when you write your personal essay.</p>
+    `
+  },
+  {
+    id: 2,
+    title: "Profile & Background Sections",
+    tag: "Module 02",
+    intro: "Navigate the basics — demographics, family background, and how to answer sensitive questions with confidence.",
+    content: `
+      <h2>The Basics: What Goes Here</h2>
+      <p>The profile section covers your personal information, contact details, citizenship, and family background. Most of it is straightforward data entry — but a few questions deserve real thought.</p>
+
+      <h2>Citizenship & Residency Questions</h2>
+      <p>Answer these accurately. If you have dual citizenship, you can list both. If you're a permanent resident (green card holder), there's a separate option. Colleges use this for institutional reporting and financial aid eligibility — it does not directly affect your admission chances at most schools.</p>
+
+      <h2>Family Background</h2>
+      <p>The Common App asks about your parents' education levels and occupations. This information factors into "first-generation student" designation, which many colleges actively seek out. If neither of your parents has a four-year college degree, <strong>you are a first-generation student</strong> — and that's worth noting proudly. It tells a story of context.</p>
+
+      <div class="callout"><strong>💡 First-generation tip</strong>If you are a first-gen student, make sure this context comes through elsewhere in your application too — in your activities, your essay, or the additional information section. Context matters enormously.</div>
+
+      <h2>Sensitive Questions</h2>
+      <p>Some colleges ask about disciplinary history or legal history. Read these questions carefully — they usually only pertain to certain types of incidents. When in doubt, consult your school counselor. Honesty is always the right approach; what matters is how you contextualize it.</p>
+
+      <h2>Race/Ethnicity</h2>
+      <p>This is self-reported and optional at most schools. The Supreme Court's 2023 ruling changed how race can be used in admissions, but your identity can still come through your essays and activities. Be authentic about who you are.</p>
+    `
+  },
+  {
+    id: 3,
+    title: "Academics & Testing",
+    tag: "Module 03",
+    intro: "How to present your GPA, course rigor, and test scores in the strongest light — even when they're imperfect.",
+    content: `
+      <h2>GPA & Transcripts</h2>
+      <p>You'll report your GPA as your school calculates it — weighted or unweighted, depending on how your school reports it. The Common App will ask you to select your GPA scale. Don't round up or misrepresent it; colleges will receive your official transcript and any discrepancy is a serious red flag.</p>
+
+      <p>What matters more than the number is the <strong>trend</strong>. A student who struggled freshman year and improved steadily tells a compelling story of growth. Make sure that story gets told somewhere in your application.</p>
+
+      <h2>Course Rigor</h2>
+      <p>Colleges want to see that you challenged yourself. AP, IB, Honors, and dual enrollment courses all signal this. They'll see what was available at your school versus what you took. If your school doesn't offer many AP courses, that's context the college will consider — they evaluate you relative to your opportunities.</p>
+
+      <h2>SAT / ACT Strategy</h2>
+      <p>Most schools are still test-optional through at least 2026. Here's how to decide whether to submit:</p>
+      <ul>
+        <li>If your score is <strong>at or above</strong> the school's middle 50% range — submit it.</li>
+        <li>If your score is <strong>below</strong> the 25th percentile — strongly consider not submitting it.</li>
+        <li>If you're in between — research that specific school's test-optional policy and philosophy.</li>
+      </ul>
+
+      <div class="callout"><strong>📊 How to find the middle 50%</strong>Search "[School Name] Common Data Set" and look at Section C9. This shows the SAT/ACT scores of the enrolled freshman class — that's your benchmark.</div>
+
+      <h2>AP Scores</h2>
+      <p>AP scores are self-reported on the Common App and won't be verified until you enroll. Report scores of 4 or 5 proudly. Scores of 3 are optional — include them if they're in subjects related to your intended major. Scores of 1 or 2: leave them off.</p>
+    `
+  },
+  {
+    id: 4,
+    title: "Activities & Extracurriculars",
+    tag: "Module 04",
+    intro: "The most underutilized section of the Common App. Learn how to make 150 characters do the heavy lifting.",
+    content: `
+      <h2>The Activities Section: What It Actually Is</h2>
+      <p>You get 10 activity slots. Each one has a 150-character description and a 50-character position/leadership field. This is not a resume — it's a highlight reel. The goal is to make your activities feel <em>specific</em>, <em>impactful</em>, and <em>yours</em>.</p>
+
+      <h2>How to Rank Your Activities</h2>
+      <p>Put your most meaningful activities first. "Most meaningful" doesn't always mean most impressive to outsiders — it means most central to your story and identity. A student who spends 20 hours a week caring for a younger sibling should probably list that before a club they attended twice a month.</p>
+
+      <div class="callout"><strong>📝 Ranking exercise</strong>List all your activities. Next to each, write: (1) hours per week, (2) weeks per year, and (3) what you actually did/achieved. Then rank by a combination of time invested + impact + relevance to your story.</div>
+
+      <h2>Writing 150-Character Descriptions That Pop</h2>
+      <p>The most common mistake: writing what the activity is instead of what <em>you</em> did. Compare:</p>
+
+      <blockquote>❌ "Member of the debate team. Competed in regional tournaments." (Generic, tells us nothing about you.)</blockquote>
+
+      <blockquote>✅ "Led 12-person team to state semifinals; wrote and coached 40+ original arguments on criminal justice policy." (Specific, quantified, shows leadership and intellectual depth.)</blockquote>
+
+      <p>Use active verbs. Quantify when you can. Show impact, not just presence.</p>
+
+      <h2>What If You Don't Have Many Activities?</h2>
+      <p>This is more common than you think, and colleges understand that not all students have the same access to extracurriculars. Use the activities section to capture <em>everything</em> meaningful: a part-time job, family responsibilities, self-directed projects, community work, creative pursuits. These all count.</p>
+
+      <h2>The Honors Section</h2>
+      <p>Don't forget the five honors slots. Academic awards, national recognition, local competitions — list the most impressive ones and give enough context that a reader in another state understands what the award is.</p>
+    `
+  },
+  {
+    id: 5,
+    title: "The Personal Essay",
+    tag: "Module 05",
+    intro: "The heart of your application. How to choose a topic, find your voice, and write something unforgettable.",
+    content: `
+      <h2>Why the Personal Essay Matters</h2>
+      <p>The personal essay is the one place in the entire application where you get to speak in your own voice, with no constraints except length (250–650 words). It's not about impressing the admissions officer — it's about helping them understand who you are in a way that grades and test scores cannot.</p>
+
+      <h2>The 7 Prompts (And How to Think About Them)</h2>
+      <p>The Common App offers 7 prompts, including one completely open-ended option. The truth is: <strong>the prompt matters far less than your response</strong>. Most strong essays could fit under multiple prompts. Pick the one that gives you the most freedom to write what you actually want to write.</p>
+
+      <p>That said, Prompt 1 ("Tell us your story") and Prompt 7 ("Topic of your choice") are the most flexible and tend to produce the strongest essays because they let students write what they need to write rather than forcing a topic.</p>
+
+      <h2>How to Pick a Topic</h2>
+      <p>The best personal essay topics are almost never the "big moment" — the game-winning shot, the death of a grandparent, the mission trip. Those topics are so common that admissions officers have become numb to them unless the writing is extraordinary.</p>
+
+      <p>The best essays tend to be about something <em>small</em> that reveals something <em>large</em>. The way you organize your bookshelf. A recurring argument with your little brother. The ritual of making your grandmother's recipe. The interesting thing about small topics is that they force specificity — and specificity is what makes writing memorable.</p>
+
+      <div class="callout"><strong>✍️ Brainstorm prompt</strong>Set a timer for 20 minutes. Write down 10 memories or moments from the last 4 years — no filtering, no judgment. Then look at the list and ask: which one could I write 3 pages about? That's probably your essay topic.</div>
+
+      <h2>Structure & Voice</h2>
+      <p>There's no one right structure. Some of the best essays start in the middle of a scene. Some are structured as lists. Some are almost entirely reflection. What they all have in common: a distinct voice that sounds like a real person, not a college essay.</p>
+
+      <p>Read your draft out loud. If it doesn't sound like how you talk when you're being thoughtful, rewrite it until it does.</p>
+
+      <h2>Revision: The Real Work</h2>
+      <p>Your first draft will not be your final draft. Plan for at least 3–5 rounds of revision. Show it to someone who will be honest with you (not just supportive). The question they should ask after reading: "I feel like I know you better now" — or not. That's your benchmark.</p>
+    `
+  },
+  {
+    id: 6,
+    title: "Additional Information",
+    tag: "Module 06",
+    intro: "Most students leave this blank. Here's when and how to use it strategically.",
+    content: `
+      <h2>What This Section Is For</h2>
+      <p>The Additional Information section gives you 650 words to add anything that doesn't fit elsewhere. It's entirely optional — but used well, it can do real work for your application.</p>
+
+      <h2>When to Use It</h2>
+      <ul>
+        <li><strong>Explaining a grade drop or academic setback</strong> — If your GPA dipped sophomore year due to a family crisis, illness, or other hardship, this is where you explain it briefly and factually.</li>
+        <li><strong>Adding achievements that didn't fit</strong> — If you had more than 10 activities, or your honors slots were full, use this space.</li>
+        <li><strong>Explaining an unusual transcript</strong> — If you transferred schools, took a gap semester, or have unusual coursework, clarify it here.</li>
+        <li><strong>Sharing something significant that's not covered elsewhere</strong> — A creative project, a research paper, a relevant life experience.</li>
+      </ul>
+
+      <h2>When NOT to Use It</h2>
+      <p>Don't use this section to repeat information that's already clear elsewhere. Don't write a second essay. Don't use it to apologize for weaknesses without adding context. If you have nothing truly additional to add, leave it blank — admissions officers will not penalize you for that.</p>
+
+      <div class="callout"><strong>📌 The one question to ask yourself</strong>"Does this information materially help the admissions officer understand something important about me that they wouldn't otherwise know?" If yes, write it. If no, skip it.</div>
+
+      <h2>Tone for Explaining Setbacks</h2>
+      <p>If you're addressing a difficult situation, be factual and forward-looking. State what happened, briefly. State how you responded or what you learned. Don't over-explain or be defensive. Two to three sentences is often enough — the goal is context, not excuses.</p>
+    `
+  },
+  {
+    id: 7,
+    title: "Recommenders & School Reports",
+    tag: "Module 07",
+    intro: "How to choose the right recommenders, ask professionally, and set them up to write powerful letters.",
+    content: `
+      <h2>Choosing Your Recommenders</h2>
+      <p>Most colleges require 2 teacher recommendations and 1 school counselor recommendation. Some allow or require additional letters. The best recommenders are teachers who:</p>
+      <ul>
+        <li>Know you well as a student — not just as a grade</li>
+        <li>Have seen you work hard, struggle, grow, or contribute</li>
+        <li>Teach a subject relevant to your interests or intended major</li>
+        <li>Can write enthusiastically, not just competently</li>
+      </ul>
+
+      <p>A warm letter from a teacher who knows you deeply will always outperform a more prestigious letter from someone who barely knows you.</p>
+
+      <h2>How to Ask (With Professionalism)</h2>
+      <p>Ask in person — not by email. Give them significant lead time: ideally June or early September for fall applications. When you ask, be direct: "Would you be comfortable writing a strong recommendation for me?"</p>
+
+      <p>The word "strong" matters. It gives them an out to decline gracefully if they don't feel they can write a compelling letter — which is better for both of you.</p>
+
+      <div class="callout"><strong>📬 What to give your recommenders</strong>After they agree: share your resume/activity list, your personal essay draft (when ready), the schools you're applying to and why, and a few specific moments from their class you hope they might mention. This makes their job easier and your letter better.</div>
+
+      <h2>School Counselor Report</h2>
+      <p>Your school counselor writes a profile of you and your school context. Meet with them early — even if it's brief — so they have something to say beyond your transcript. Share your story, your goals, and anything they might not know about you.</p>
+
+      <h2>Waiving Your Right to View Letters</h2>
+      <p>You'll be asked whether to waive your right to read your recommendation letters. <strong>Waive it.</strong> Admissions officers give more weight to letters they believe were written candidly. A recommender who knows you can see the letter may unconsciously soften feedback.</p>
+    `
+  },
+  {
+    id: 8,
+    title: "Supplements & Final Review",
+    tag: "Module 08",
+    intro: "Supplemental essays, the 'Why Us' formula, and your complete pre-submission checklist.",
+    content: `
+      <h2>Supplemental Essays</h2>
+      <p>Most selective colleges require supplemental essays in addition to the Common App personal statement. These range from 50 to 650 words and often include "Why Us?" essays, activity elaborations, or additional short answers.</p>
+
+      <p>Don't underestimate supplements. At highly selective schools, they carry enormous weight — sometimes as much as the personal statement — because they're school-specific and demonstrate genuine interest.</p>
+
+      <h2>The "Why Us" Formula</h2>
+      <p>The "Why This School?" essay is one of the most commonly botched supplements. Most students write generic answers about "strong academics" and "vibrant community." That tells the school nothing.</p>
+
+      <p>A strong "Why Us" essay has three layers:</p>
+      <ol>
+        <li><strong>Specific academic opportunities</strong> — A professor's research, a particular program, a course sequence, an interdisciplinary major</li>
+        <li><strong>Specific community/campus elements</strong> — A club, an initiative, a tradition, a culture that resonates with you</li>
+        <li><strong>Personal connection</strong> — Why these specific things matter to your specific goals</li>
+      </ol>
+
+      <div class="callout"><strong>🔍 Research method</strong>Spend 30 minutes per school: read the department page for your intended major, look at recent campus news, check student organization lists, and look up one or two faculty members whose work interests you. Then write from that research.</div>
+
+      <h2>Final Submission Checklist</h2>
+      <ul>
+        <li>☐ Personal essay — proofread by at least two people</li>
+        <li>☐ All supplemental essays complete and specific to each school</li>
+        <li>☐ Activities section — 10 slots filled or all relevant ones included</li>
+        <li>☐ Honors section — up to 5 entries</li>
+        <li>☐ Recommendations — all recommenders invited and confirmed</li>
+        <li>☐ School report — counselor section initiated</li>
+        <li>☐ Test scores — submitted directly from College Board/ACT if sending</li>
+        <li>☐ Application fee or fee waiver submitted</li>
+        <li>☐ Email confirmation received after submission</li>
+        <li>☐ Deadlines double-checked for every school on your list</li>
+      </ul>
+
+      <h2>You're Ready</h2>
+      <p>If you've worked through all 8 modules and done the assignments along the way, you have everything you need to submit a strong Common App. The work is never perfect — submit the best version you have before the deadline. Done is better than perfect.</p>
+
+      <blockquote>"The application that gets sent is infinitely better than the one that's still being revised."</blockquote>
+
+      <p>Good luck — you've got this.</p>
+    `
+  }
+];
+
+// ── State ────────────────────────────────────────────────────────────────────
+let currentModule = 0;
+let completed = JSON.parse(localStorage.getItem('completedModules') || '[]');
+
+// ── Init ─────────────────────────────────────────────────────────────────────
+function init() {
+  renderSidebar();
+  loadModule(currentModule);
+  updateProgress();
+}
+
+function renderSidebar() {
+  const list = document.getElementById('moduleList');
+  list.innerHTML = modules.map((m, i) => `
+    <li class="module-item ${i === currentModule ? 'active' : ''} ${completed.includes(i) ? 'completed' : ''}"
+        onclick="loadModule(${i})">
+      <div class="module-check">${completed.includes(i) ? '✓' : ''}</div>
+      <span class="module-title">${m.tag} — ${m.title}</span>
+    </li>
+  `).join('');
+}
+
+function loadModule(index) {
+  currentModule = index;
+  const m = modules[index];
+  const isLast = index === modules.length - 1;
+  const isCompleted = completed.includes(index);
+
+  document.getElementById('mainContent').innerHTML = `
+    <div class="lesson-header">
+      <span class="lesson-tag">${m.tag} of 8</span>
+      <h1>${m.title}</h1>
+      <p>${m.intro}</p>
+    </div>
+    <div class="lesson-body">${m.content}</div>
+    <div class="lesson-footer">
+      <button class="nav-btn nav-btn-prev" onclick="loadModule(${index - 1})" ${index === 0 ? 'disabled' : ''}>
+        ← Previous
+      </button>
+      ${isLast
+        ? `<button class="nav-btn nav-btn-next complete" onclick="markComplete(${index})">
+            ${isCompleted ? '✓ Course Complete!' : 'Complete Course ✓'}
+           </button>`
+        : `<button class="nav-btn nav-btn-next" onclick="markComplete(${index})">
+            ${isCompleted ? 'Next →' : 'Mark Complete & Continue →'}
+           </button>`
+      }
+    </div>
+  `;
+
+  renderSidebar();
+  window.scrollTo(0, 0);
+}
+
+function markComplete(index) {
+  if (!completed.includes(index)) {
+    completed.push(index);
+    localStorage.setItem('completedModules', JSON.stringify(completed));
+    updateProgress();
+  }
+  if (index < modules.length - 1) loadModule(index + 1);
+  else renderSidebar();
+}
+
+function updateProgress() {
+  const pct = Math.round((completed.length / modules.length) * 100);
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressText').textContent = `${completed.length} of ${modules.length} modules complete`;
+}
+
+async function logout() {
+  await fetch('/api/logout', { method: 'POST', credentials: 'include' });
+  window.location.href = '/login.html';
+}
+
+init();
+</script>
+</body>
+</html>

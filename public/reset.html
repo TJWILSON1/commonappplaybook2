@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Reset Password — The Common App Playbook</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --ink: #1a1410; --cream: #faf8f4; --accent: #c4602a;
+    --accent-dark: #8c3f15; --border: rgba(26,20,16,0.15);
+    --serif: 'Playfair Display', serif; --sans: 'DM Sans', sans-serif;
+  }
+  body {
+    font-family: var(--sans); background: var(--ink); color: var(--cream);
+    min-height: 100vh; display: flex; align-items: center; justify-content: center;
+    padding: 2rem;
+  }
+  .container {
+    width: 100%; max-width: 420px;
+  }
+  .logo {
+    font-family: var(--serif); font-size: 1.1rem; font-weight: 700;
+    color: var(--cream); text-decoration: none; display: block;
+    text-align: center; margin-bottom: 2.5rem; letter-spacing: -0.01em;
+  }
+  .card {
+    background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 16px; padding: 2.5rem;
+  }
+  h1 {
+    font-family: var(--serif); font-size: 1.8rem; font-weight: 900;
+    margin-bottom: 0.4rem; line-height: 1.1;
+  }
+  .subtitle {
+    font-size: 0.9rem; color: rgba(250,248,244,0.55); margin-bottom: 2rem;
+  }
+  .field { margin-bottom: 1.2rem; }
+  label {
+    display: block; font-size: 0.78rem; letter-spacing: 0.08em;
+    text-transform: uppercase; color: rgba(250,248,244,0.5); margin-bottom: 0.5rem;
+  }
+  input {
+    width: 100%; padding: 0.85rem 1rem; background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.12); border-radius: 8px;
+    color: var(--cream); font-family: var(--sans); font-size: 0.95rem;
+    outline: none; transition: border-color 0.2s;
+  }
+  input:focus { border-color: var(--accent); }
+  input::placeholder { color: rgba(250,248,244,0.3); }
+  .btn {
+    width: 100%; padding: 0.95rem; background: var(--accent);
+    border: none; border-radius: 8px; color: #fff; font-family: var(--sans);
+    font-size: 0.95rem; font-weight: 500; cursor: pointer;
+    transition: background 0.2s, transform 0.15s; margin-top: 0.5rem;
+  }
+  .btn:hover { background: var(--accent-dark); transform: translateY(-1px); }
+  .btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+  .error {
+    background: rgba(220, 80, 60, 0.15); border: 1px solid rgba(220, 80, 60, 0.3);
+    border-radius: 8px; padding: 0.85rem 1rem; font-size: 0.88rem;
+    color: #f4877a; margin-bottom: 1.2rem; display: none;
+  }
+  .success {
+    background: rgba(80, 220, 100, 0.15); border: 1px solid rgba(80, 220, 100, 0.3);
+    border-radius: 8px; padding: 0.85rem 1rem; font-size: 0.88rem;
+    color: #7af487; margin-bottom: 1.2rem; display: none;
+  }
+  .back-link {
+    text-align: center; font-size: 0.88rem; color: rgba(250,248,244,0.45);
+    margin-top: 1.5rem;
+  }
+  .back-link a { color: var(--accent); text-decoration: none; }
+  .back-link a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+<div class="container">
+  <a href="/" class="logo">The Common App Playbook</a>
+  <div class="card">
+    <h1>Reset your password</h1>
+    <p class="subtitle">Enter your email address and we'll send you a link to reset your password.</p>
+
+    <div class="success" id="success"></div>
+    <div class="error" id="error"></div>
+
+    <form id="resetForm">
+      <div class="field">
+        <label for="email">Email address</label>
+        <input type="email" id="email" name="email" placeholder="you@example.com" required autocomplete="email" />
+      </div>
+      <button class="btn" type="submit" id="submitBtn">Send reset link</button>
+    </form>
+
+    <p class="back-link"><a href="/login.html">← Back to sign in</a></p>
+  </div>
+</div>
+
+<script>
+  document.getElementById('resetForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById('submitBtn');
+    const errEl = document.getElementById('error');
+    const successEl = document.getElementById('success');
+    errEl.style.display = 'none';
+    successEl.style.display = 'none';
+    btn.disabled = true;
+    btn.textContent = 'Sending…';
+
+    const email = document.getElementById('email').value;
+
+    try {
+      const res = await fetch('/api/forgot-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to send reset email');
+      successEl.style.display = 'block';
+      successEl.textContent = 'Reset link sent! Check your email.';
+      document.getElementById('resetForm').reset();
+    } catch (err) {
+      errEl.style.display = 'block';
+      errEl.textContent = err.message;
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Send reset link';
+    }
+  });
+</script>
+</body>
+</html>

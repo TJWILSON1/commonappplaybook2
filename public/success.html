@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Payment Successful — The Common App Playbook</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --ink: #1a1410; --cream: #faf8f4; --accent: #c4602a;
+    --gold: #c9a84c;
+    --serif: 'Playfair Display', serif; --sans: 'DM Sans', sans-serif;
+  }
+  body {
+    font-family: var(--sans); background: var(--ink); color: var(--cream);
+    min-height: 100vh; display: flex; align-items: center; justify-content: center;
+    padding: 2rem; text-align: center;
+  }
+  .container { max-width: 520px; width: 100%; }
+  .icon {
+    width: 72px; height: 72px; border-radius: 50%;
+    background: rgba(201,168,76,0.15); border: 1px solid rgba(201,168,76,0.3);
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 1.5rem; font-size: 2rem;
+  }
+  h1 { font-family: var(--serif); font-size: 2.4rem; font-weight: 900; margin-bottom: 1rem; }
+  .subtitle { font-size: 1rem; color: rgba(250,248,244,0.65); line-height: 1.7; margin-bottom: 2rem; }
+  .card {
+    background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 16px; padding: 2rem; margin-bottom: 1.5rem; text-align: left;
+  }
+  .step {
+    display: flex; gap: 1rem; align-items: flex-start; margin-bottom: 1.2rem;
+  }
+  .step:last-child { margin-bottom: 0; }
+  .step-num {
+    width: 28px; height: 28px; border-radius: 50%; background: var(--accent);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.78rem; font-weight: 500; flex-shrink: 0; margin-top: 0.1rem;
+  }
+  .step-text strong { display: block; font-size: 0.95rem; margin-bottom: 0.2rem; }
+  .step-text span { font-size: 0.85rem; color: rgba(250,248,244,0.55); }
+  .email-display {
+    background: rgba(201,168,76,0.1); border: 1px solid rgba(201,168,76,0.25);
+    border-radius: 8px; padding: 0.75rem 1rem; font-size: 0.9rem;
+    color: rgba(201,168,76,0.9); margin-bottom: 1.5rem;
+  }
+  .btn {
+    display: inline-block; padding: 0.9rem 2rem; background: var(--accent);
+    border: none; border-radius: 8px; color: #fff; font-family: var(--sans);
+    font-size: 0.95rem; font-weight: 500; cursor: pointer; text-decoration: none;
+    transition: background 0.2s;
+  }
+  .btn:hover { background: #8c3f15; }
+  .loading { opacity: 0.6; font-size: 0.9rem; margin-bottom: 1rem; }
+  .error-box {
+    background: rgba(220,80,60,0.12); border: 1px solid rgba(220,80,60,0.25);
+    border-radius: 8px; padding: 1rem; color: #f4877a; font-size: 0.9rem;
+    display: none; margin-bottom: 1.5rem;
+  }
+  #step2 { display: none; }
+  .set-password-form input {
+    width: 100%; padding: 0.85rem 1rem; background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.12); border-radius: 8px;
+    color: var(--cream); font-family: var(--sans); font-size: 0.95rem;
+    outline: none; margin-bottom: 0.8rem; transition: border-color 0.2s;
+  }
+  .set-password-form input:focus { border-color: var(--accent); }
+  .set-password-form input::placeholder { color: rgba(250,248,244,0.3); }
+  .hint { font-size: 0.8rem; color: rgba(250,248,244,0.4); margin-bottom: 1rem; }
+</style>
+</head>
+<body>
+<div class="container">
+  <!-- Step 1: Verifying payment -->
+  <div id="step1">
+    <div class="icon">⏳</div>
+    <h1>Verifying payment…</h1>
+    <p class="loading">Please wait while we confirm your purchase.</p>
+  </div>
+
+  <!-- Step 2: Set password (new users) -->
+  <div id="step2">
+    <div class="icon">🎉</div>
+    <h1>You're in!</h1>
+    <p class="subtitle">Your payment is confirmed. Create a password to access your course anytime.</p>
+    <div id="emailDisplay" class="email-display"></div>
+    <div class="card">
+      <form class="set-password-form" id="passwordForm">
+        <input type="password" id="newPassword" placeholder="Create a password (min. 8 characters)" minlength="8" required />
+        <input type="password" id="confirmPassword" placeholder="Confirm password" required />
+        <p class="hint">You'll use this email + password to log in next time.</p>
+        <div class="error-box" id="pwError"></div>
+        <button class="btn" type="submit" id="pwBtn" style="width:100%;">Set password & enter course →</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Step 3: Returning user (already has account) -->
+  <div id="step3" style="display:none;">
+    <div class="icon">✅</div>
+    <h1>Payment confirmed!</h1>
+    <p class="subtitle">Your account already exists. Sign in to access your course.</p>
+    <div id="emailDisplay3" class="email-display"></div>
+    <a href="/login.html" class="btn">Sign in to your course →</a>
+  </div>
+
+  <div class="error-box" id="mainError" style="display:block;display:none;"></div>
+</div>
+
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const sessionId = params.get('session_id');
+
+  async function verifyPayment() {
+    if (!sessionId) {
+      showError('No session ID found. Please contact support.');
+      return;
+    }
+
+    try {
+      const res = await fetch(`/api/verify-payment?session_id=${sessionId}`, { credentials: 'include' });
+      const data = await res.json();
+
+      if (!res.ok) throw new Error(data.error || 'Verification failed');
+
+      if (data.isNewUser) {
+        // Show password setup
+        document.getElementById('step1').style.display = 'none';
+        document.getElementById('step2').style.display = 'block';
+        document.getElementById('emailDisplay').textContent = `📧 ${data.email}`;
+        setupPasswordForm(data.email);
+      } else {
+        // Returning buyer — just send to login
+        document.getElementById('step1').style.display = 'none';
+        document.getElementById('step3').style.display = 'block';
+        document.getElementById('emailDisplay3').textContent = `📧 ${data.email}`;
+      }
+    } catch (err) {
+      showError(err.message);
+    }
+  }
+
+  function setupPasswordForm(email) {
+    document.getElementById('passwordForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const pw = document.getElementById('newPassword').value;
+      const pw2 = document.getElementById('confirmPassword').value;
+      const errEl = document.getElementById('pwError');
+      const btn = document.getElementById('pwBtn');
+      errEl.style.display = 'none';
+
+      if (pw !== pw2) {
+        errEl.style.display = 'block';
+        errEl.textContent = 'Passwords do not match.';
+        return;
+      }
+      if (pw.length < 8) {
+        errEl.style.display = 'block';
+        errEl.textContent = 'Password must be at least 8 characters.';
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = 'Setting up your account…';
+
+      try {
+        const res = await fetch('/api/set-password', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password: pw, session_id: sessionId }),
+          credentials: 'include',
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error);
+        window.location.href = '/course.html';
+      } catch (err) {
+        errEl.style.display = 'block';
+        errEl.textContent = err.message;
+        btn.disabled = false;
+        btn.textContent = 'Set password & enter course →';
+      }
+    });
+  }
+
+  function showError(msg) {
+    document.getElementById('step1').style.display = 'none';
+    const el = document.getElementById('mainError');
+    el.style.display = 'block';
+    el.innerHTML = `<strong>Something went wrong:</strong> ${msg}<br><br>Please email us at <a href="mailto:support@yoursite.com" style="color:#f4877a;">support@yoursite.com</a> with your receipt and we'll sort it out within 24 hours.`;
+  }
+
+  verifyPayment();
+</script>
+</body>
+</html>
