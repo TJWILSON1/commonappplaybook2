@@ -307,61 +307,55 @@
     const btn = document.getElementById('submitBtn');
     btn.disabled = true;
     btn.textContent = 'Uploading…';
+    setProgress(20, 'Reading file…');
 
-    try {
-      // Step 1: Get a signed upload URL from the server
-      setProgress(15, 'Verifying payment…');
-      const urlRes = await fetch('/api/get-upload-url', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          session_id: sessionId,
-          filename: selectedFile.name,
-          type: reviewType,
-        }),
-      });
-      const urlData = await urlRes.json();
-      if (!urlRes.ok) throw new Error(urlData.error || 'Could not get upload URL');
-
-      // Step 2: Upload file directly to Supabase Storage
-      setProgress(40, 'Uploading file…');
-      const uploadRes = await fetch(urlData.signedUrl, {
-        method: 'PUT',
-        body: selectedFile,
-        headers: { 'Content-Type': selectedFile.type || 'application/octet-stream' },
-      });
-      if (!uploadRes.ok) throw new Error('File upload failed. Please try again.');
-
-      // Step 3: Record the submission
-      setProgress(85, 'Saving submission…');
-      const submitRes = await fetch('/api/submit-review', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          session_id: sessionId,
-          type: reviewType,
-          email,
-          file_path: urlData.filePath,
-        }),
-      });
-      const submitData = await submitRes.json();
-      if (!submitRes.ok) throw new Error(submitData.error || 'Could not save submission');
-
-      // Done
-      setProgress(100, 'Done!');
-      setTimeout(() => {
-        document.getElementById('uploadState').style.display = 'none';
-        document.getElementById('successState').style.display = 'block';
-        document.getElementById('confirmedEmail').textContent = email;
-      }, 500);
-
-    } catch (err) {
-      showError(err.message);
+    // Read file as base64 then send to server in one request
+    const reader = new FileReader();
+    reader.onerror = function() {
+      showError('Could not read file. Please try again.');
       btn.disabled = false;
-      btn.textContent = 'Submit for review →';
+      btn.textContent = 'Submit for review \u2192';
       setProgress(0, '');
-    }
+    };
+    reader.onload = async function(e) {
+      try {
+        // Strip the data URL prefix (e.g. "data:application/pdf;base64,")
+        const base64 = e.target.result.split(',')[1];
+        setProgress(50, 'Uploading…');
+
+        const res = await fetch('/api/submit-review', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            session_id: sessionId,
+            type: reviewType,
+            email: email,
+            file_data: base64,
+            file_name: selectedFile.name,
+            file_type: selectedFile.type || 'application/octet-stream',
+          }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Submission failed');
+
+        setProgress(100, 'Done!');
+        setTimeout(function() {
+          document.getElementById('uploadState').style.display = 'none';
+          document.getElementById('successState').style.display = 'block';
+          document.getElementById('confirmedEmail').textContent = email;
+        }, 400);
+
+      } catch (err) {
+        showError(err.message);
+        btn.disabled = false;
+        btn.textContent = 'Submit for review \u2192';
+        setProgress(0, '');
+      }
+    };
+    reader.readAsDataURL(selectedFile);
+    return; // rest of old handleSubmit removed — reader.onload handles it
   }
+
 </script>
 </body>
 </html>

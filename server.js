@@ -215,70 +215,51 @@ app.get('/course.html', requireAuth, (req, res) => {
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-// ── Review submission endpoints ───────────────────────────────────────────────
-
-// Return public Supabase config (anon key is safe to expose)
-app.get('/api/config', (req, res) => {
-  res.json({
-    supabaseUrl: process.env.SUPABASE_URL,
-    supabaseAnonKey: process.env.SUPABASE_ANON_KEY,
-  });
-});
-
-// Generate a signed upload URL — verifies Stripe payment first
-app.post('/api/get-upload-url', async (req, res) => {
-  const { session_id, filename, type } = req.body;
-  if (!session_id || !filename) {
-    return res.status(400).json({ error: 'Missing session_id or filename' });
-  }
-  try {
-    // Verify payment is real
-    const session = await stripe.checkout.sessions.retrieve(session_id);
-    if (session.payment_status !== 'paid') {
-      return res.status(402).json({ error: 'Payment not confirmed' });
-    }
-    // Clean filename and build storage path
-    const safeName = filename.replace(/[^a-zA-Z0-9._-]/g, '_');
-    const filePath = `${session_id}/${Date.now()}_${safeName}`;
-    // Create a signed URL so the browser can upload directly to Supabase Storage
-    const { data, error } = await supabaseAdmin.storage
-      .from('reviews')
-      .createSignedUploadUrl(filePath);
-    if (error) throw error;
-    res.json({ signedUrl: data.signedUrl, token: data.token, filePath });
-  } catch (err) {
-    console.error('Get upload URL error:', err.message);
-    res.status(500).json({ error: err.message });
-  }
-});
-
-// Record completed submission + notify TJ
+// ── Review submission endpoint ────────────────────────────────────────────────
+// Accepts file as base64, uploads to Supabase Storage server-side (service role),
+// records submission in DB, and notifies TJ via email if Resend is configured.
 app.post('/api/submit-review', async (req, res) => {
-  const { session_id, type, email, file_path } = req.body;
-  if (!session_id || !file_path) {
+  const { session_id, type, email, file_data, file_name, file_type } = req.body;
+  if (!session_id || !file_data || !file_name) {
     return res.status(400).json({ error: 'Missing required fields' });
   }
   try {
-    // Verify payment again
+    // Verify Stripe payment is real before doing anything
     const session = await stripe.checkout.sessions.retrieve(session_id);
     if (session.payment_status !== 'paid') {
       return res.status(402).json({ error: 'Payment not confirmed' });
     }
     const studentEmail = email || session.customer_details?.email || 'unknown';
-    // Get public URL for the file
-    const { data: urlData } = supabaseAdmin.storage
+
+    // Decode base64 file and upload to Supabase Storage using service role
+    const fileBuffer = Buffer.from(file_data, 'base64');
+    const safeName = file_name.replace(/[^a-zA-Z0-9._-]/g, '_');
+    const filePath = `${session_id}/${Date.now()}_${safeName}`;
+
+    const { error: uploadError } = await supabaseAdmin.storage
       .from('reviews')
-      .getPublicUrl(file_path);
-    // Store in submissions table
+      .upload(filePath, fileBuffer, {
+        contentType: file_type || 'application/octet-stream',
+        upsert: false,
+      });
+    if (uploadError) throw uploadError;
+
+    // Get a signed download URL (valid 7 days) so TJ can access the file
+    const { data: signedData } = await supabaseAdmin.storage
+      .from('reviews')
+      .createSignedUrl(filePath, 60 * 60 * 24 * 7);
+
+    // Record submission in DB
     await supabaseAdmin.from('submissions').insert({
       session_id,
       type: type || 'essay_review',
       email: studentEmail,
-      file_path,
-      file_url: urlData.publicUrl,
+      file_path: filePath,
+      file_url: signedData?.signedUrl || '',
       submitted_at: new Date().toISOString(),
     });
-    // Send email notification to TJ if Resend is configured
+
+    // Email notification to TJ (optional — only if RESEND_API_KEY is set)
     if (process.env.RESEND_API_KEY) {
       try {
         const { Resend } = require('resend');
@@ -287,20 +268,18 @@ app.post('/api/submit-review', async (req, res) => {
         await resend.emails.send({
           from: process.env.RESEND_FROM || 'onboarding@resend.dev',
           to: 'supertjwilson23@gmail.com',
-          subject: `New ${label} Submission — The Common App Playbook`,
-          html: `
-            <h2>New ${label} submission</h2>
-            <p><strong>Student:</strong> ${studentEmail}</p>
-            <p><strong>Type:</strong> ${label}</p>
-            <p><strong>File:</strong> <a href="${urlData.publicUrl}">Download submission</a></p>
-            <p><strong>Submitted:</strong> ${new Date().toLocaleString()}</p>
-          `,
+          subject: `New ${label} — The Common App Playbook`,
+          html: `<h2>New ${label} submission</h2>
+                 <p><strong>Student:</strong> ${studentEmail}</p>
+                 <p><strong>File:</strong> <a href="${signedData?.signedUrl}">Download (expires in 7 days)</a></p>
+                 <p><strong>Submitted:</strong> ${new Date().toLocaleString()}</p>`,
         });
       } catch (emailErr) {
-        // Non-fatal — submission is still recorded
         console.error('Email notification failed:', emailErr.message);
+        // Non-fatal — submission is still saved
       }
     }
+
     res.json({ success: true });
   } catch (err) {
     console.error('Submit review error:', err.message);
