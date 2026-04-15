@@ -590,12 +590,12 @@
   }
 
   /* ── Hero entrance (fires on page load) ── */
-  .hero-tag    { opacity: 0; animation: fadeUp 0.7s ease forwards 0.15s; }
-  .hero h1     { opacity: 0; animation: fadeUp 0.8s ease forwards 0.35s; }
-  .hero-sub    { opacity: 0; animation: fadeUp 0.7s ease forwards 0.55s; }
-  .hero-actions { opacity: 0; animation: fadeUp 0.7s ease forwards 0.72s; }
-  .hero-price-note { opacity: 0; animation: fadeIn 0.6s ease forwards 0.9s; }
-  .hero-card   { opacity: 0; animation: slideRight 0.9s cubic-bezier(0.22,1,0.36,1) forwards 0.45s; }
+  .js-ready .hero-tag    { opacity: 0; animation: fadeUp 0.7s ease forwards 0.15s; }
+  .js-ready .hero h1     { opacity: 0; animation: fadeUp 0.8s ease forwards 0.35s; }
+  .js-ready .hero-sub    { opacity: 0; animation: fadeUp 0.7s ease forwards 0.55s; }
+  .js-ready .hero-actions { opacity: 0; animation: fadeUp 0.7s ease forwards 0.72s; }
+  .js-ready .hero-price-note { opacity: 0; animation: fadeIn 0.6s ease forwards 0.9s; }
+  .js-ready .hero-card   { opacity: 0; animation: slideRight 0.9s cubic-bezier(0.22,1,0.36,1) forwards 0.45s; }
 
   /* Float the hero card continuously after entrance */
   .hero-card.loaded { animation: floatCard 6s ease-in-out infinite; }
@@ -612,27 +612,28 @@
   }
 
   /* ── Scroll reveal base ── */
-  .reveal {
+  /* JS adds .js-ready to <html> before hiding elements — no-JS fallback stays visible */
+  .js-ready .reveal {
     opacity: 0;
     transform: translateY(32px);
     transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.22,1,0.36,1);
   }
   .reveal.visible {
-    opacity: 1;
-    transform: translateY(0);
+    opacity: 1 \!important;
+    transform: translateY(0) \!important;
   }
-  .reveal-left {
+  .js-ready .reveal-left {
     opacity: 0;
     transform: translateX(-40px);
     transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.22,1,0.36,1);
   }
-  .reveal-left.visible { opacity: 1; transform: translateX(0); }
-  .reveal-right {
+  .reveal-left.visible { opacity: 1 \!important; transform: translateX(0) \!important; }
+  .js-ready .reveal-right {
     opacity: 0;
     transform: translateX(40px);
     transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.22,1,0.36,1);
   }
-  .reveal-right.visible { opacity: 1; transform: translateX(0); }
+  .reveal-right.visible { opacity: 1 \!important; transform: translateX(0) \!important; }
 
   /* Stagger delays */
   .reveal-d1 { transition-delay: 0.1s; }
@@ -1138,95 +1139,101 @@ async function startCheckout(event) {
 }
 </script>
 
+
+
 <script>
-// ── Scroll Reveal (Intersection Observer) ────────────────────────────────────
+// Mark JS active — enables CSS animations (fail-safe: no JS = content stays visible)
+document.documentElement.classList.add('js-ready');
+
+// ── Scroll Reveal ─────────────────────────────────────────────────────────────
 const revealEls = document.querySelectorAll('.reveal, .reveal-left, .reveal-right');
-const revealObs = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
+const revealObs = new IntersectionObserver(function(entries) {
+  entries.forEach(function(entry) {
     if (entry.isIntersecting) {
       entry.target.classList.add('visible');
       revealObs.unobserve(entry.target);
     }
   });
 }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
-revealEls.forEach(el => revealObs.observe(el));
+revealEls.forEach(function(el) { revealObs.observe(el); });
 
-// ── Hero card float (switch animation after entrance) ────────────────────────
-const heroCard = document.querySelector('.hero-card');
+// ── Hero card float after entrance ───────────────────────────────────────────
+var heroCard = document.querySelector('.hero-card');
 if (heroCard) {
-  heroCard.addEventListener('animationend', () => {
+  heroCard.addEventListener('animationend', function() {
     heroCard.style.opacity = '1';
     heroCard.style.transform = 'none';
     heroCard.style.animation = 'none';
-    // small delay then start float
-    setTimeout(() => { heroCard.classList.add('loaded'); }, 100);
+    setTimeout(function() { heroCard.classList.add('loaded'); }, 100);
   }, { once: true });
 }
 
-// ── Number count-up ──────────────────────────────────────────────────────────
+// ── Number count-up ───────────────────────────────────────────────────────────
 function animateCount(el, target, prefix, suffix, duration) {
-  const start = performance.now();
+  var start = performance.now();
   function step(now) {
-    const progress = Math.min((now - start) / duration, 1);
-    const ease = 1 - Math.pow(1 - progress, 3);
-    const current = Math.round(ease * target);
+    var progress = Math.min((now - start) / duration, 1);
+    var ease = 1 - Math.pow(1 - progress, 3);
+    var current = Math.round(ease * target);
     el.textContent = prefix + current + suffix;
     if (progress < 1) requestAnimationFrame(step);
   }
   requestAnimationFrame(step);
 }
-
-const statNums = document.querySelectorAll('.stat-num');
-const statObs = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-    if (\!entry.isIntersecting) return;
-    const el = entry.target;
-    const text = el.textContent.trim();
-    if (text === '8')   animateCount(el, 8, '', '', 900);
-    if (text === '$35') animateCount(el, 35, '$', '', 900);
-    statObs.unobserve(el);
+var statNums = document.querySelectorAll('.stat-num');
+var statObs = new IntersectionObserver(function(entries) {
+  entries.forEach(function(entry) {
+    if (entry.isIntersecting) {
+      var el = entry.target;
+      var text = el.textContent.trim();
+      if (text === '8')   animateCount(el, 8, '', '', 900);
+      if (text === '$35') animateCount(el, 35, '$', '', 900);
+      statObs.unobserve(el);
+    }
   });
 }, { threshold: 0.5 });
-statNums.forEach(el => statObs.observe(el));
+statNums.forEach(function(el) { statObs.observe(el); });
 
 // ── Nav scroll state ──────────────────────────────────────────────────────────
-const nav = document.querySelector('nav');
-window.addEventListener('scroll', () => {
-  nav.classList.toggle('nav-scrolled', window.scrollY > 40);
+var nav = document.querySelector('nav');
+window.addEventListener('scroll', function() {
+  if (window.scrollY > 40) {
+    nav.classList.add('nav-scrolled');
+  } else {
+    nav.classList.remove('nav-scrolled');
+  }
 }, { passive: true });
 
 // ── Hero parallax orbs ────────────────────────────────────────────────────────
-const orb1 = document.querySelector('.hero-bg-orb-1');
-const orb2 = document.querySelector('.hero-bg-orb-2');
-const hero = document.querySelector('.hero');
-if (orb1 && orb2 && hero) {
-  window.addEventListener('scroll', () => {
-    const scrolled = window.scrollY;
-    const heroH = hero.offsetHeight;
+var orb1 = document.querySelector('.hero-bg-orb-1');
+var orb2 = document.querySelector('.hero-bg-orb-2');
+var heroEl = document.querySelector('.hero');
+if (orb1 && orb2 && heroEl) {
+  window.addEventListener('scroll', function() {
+    var scrolled = window.scrollY;
+    var heroH = heroEl.offsetHeight;
     if (scrolled < heroH) {
-      const pct = scrolled / heroH;
-      orb1.style.transform = `translateY(${pct * 60}px)`;
-      orb2.style.transform = `translateY(${pct * -40}px)`;
+      var pct = scrolled / heroH;
+      orb1.style.transform = 'translateY(' + (pct * 60) + 'px)';
+      orb2.style.transform = 'translateY(' + (pct * -40) + 'px)';
     }
   }, { passive: true });
 }
 
-// ── Smooth active nav link highlight ─────────────────────────────────────────
-const sections = document.querySelectorAll('section[id]');
-const navLinks = document.querySelectorAll('.nav-links a[href^="#"]');
-const activeObs = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
+// ── Active nav highlight ──────────────────────────────────────────────────────
+var sections = document.querySelectorAll('section[id]');
+var navLinks = document.querySelectorAll('.nav-links a[href^="#"]');
+var activeObs = new IntersectionObserver(function(entries) {
+  entries.forEach(function(entry) {
     if (entry.isIntersecting) {
-      const id = entry.target.id;
-      navLinks.forEach(a => {
-        a.style.color = a.getAttribute('href') === '#' + id
-          ? 'var(--accent)' : '';
+      var id = entry.target.id;
+      navLinks.forEach(function(a) {
+        a.style.color = (a.getAttribute('href') === '#' + id) ? 'var(--accent)' : '';
       });
     }
   });
 }, { threshold: 0.4 });
-sections.forEach(s => activeObs.observe(s));
+sections.forEach(function(s) { activeObs.observe(s); });
 </script>
-
 </body>
 </html>
