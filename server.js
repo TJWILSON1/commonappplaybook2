@@ -50,17 +50,56 @@ async function requireAuth(req, res, next) {
 // ── Routes ────────────────────────────────────────────────────────────────────
 
 // Create Stripe checkout session
+// Create Stripe checkout session
+// type: 'course' (default $35) | 'essay_review' ($15) | 'short_review' ($15)
 app.post('/api/create-checkout', async (req, res) => {
   try {
+    const type = req.body.type || 'course';
+    let lineItems, successUrl;
+
+    if (type === 'essay_review') {
+      lineItems = [{
+        price_data: {
+          currency: 'usd',
+          product_data: {
+            name: 'Essay Review — The Common App Playbook',
+            description: 'Detailed written feedback on your personal statement or supplemental essay, plus one follow-up revision round.',
+          },
+          unit_amount: 1500,
+        },
+        quantity: 1,
+      }];
+      successUrl = `${process.env.APP_URL}/success.html?session_id={CHECKOUT_SESSION_ID}&type=essay_review`;
+
+    } else if (type === 'short_review') {
+      lineItems = [{
+        price_data: {
+          currency: 'usd',
+          product_data: {
+            name: 'Short Answer Review — The Common App Playbook',
+            description: 'Detailed written feedback on activity descriptions, additional info, or short supplemental responses.',
+          },
+          unit_amount: 1500,
+        },
+        quantity: 1,
+      }];
+      successUrl = `${process.env.APP_URL}/success.html?session_id={CHECKOUT_SESSION_ID}&type=short_review`;
+
+    } else {
+      // Default: full course
+      lineItems = [{ price: process.env.STRIPE_PRICE_ID, quantity: 1 }];
+      successUrl = `${process.env.APP_URL}/success.html?session_id={CHECKOUT_SESSION_ID}`;
+    }
+
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
-      line_items: [{ price: process.env.STRIPE_PRICE_ID, quantity: 1 }],
+      line_items: lineItems,
       mode: 'payment',
-      success_url: `${process.env.APP_URL}/success.html?session_id={CHECKOUT_SESSION_ID}`,
+      success_url: successUrl,
       cancel_url: `${process.env.APP_URL}/index.html`,
-      // Collect email for account creation
       customer_email: req.body.email || undefined,
     });
+
     res.json({ url: session.url });
   } catch (err) {
     console.error('Checkout error:', err.message);

@@ -106,14 +106,66 @@
     <a href="/login.html" class="btn">Sign in to your course →</a>
   </div>
 
+  <!-- Step 4: Add-on purchase confirmed -->
+  <div id="step4" style="display:none;">
+    <div class="icon">🎉</div>
+    <h1 id="addonTitle">Review purchased!</h1>
+    <p class="subtitle" id="addonSubtitle"></p>
+    <div class="card">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-text">
+          <strong>Email your writing to TJ</strong>
+          <span>Send your essay or responses to <strong style="color:var(--gold);">supertjwilson23@gmail.com</strong> with the subject line matching what you purchased.</span>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-text">
+          <strong>Include your receipt</strong>
+          <span>Forward your Stripe payment confirmation so TJ can verify your purchase quickly.</span>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-text">
+          <strong>Receive feedback within 48 hours</strong>
+          <span>Detailed written comments sent back by email. One revision round is included — reply with your updated draft.</span>
+        </div>
+      </div>
+    </div>
+    <a id="addonEmailBtn" href="mailto:supertjwilson23@gmail.com" class="btn">Email your writing now →</a>
+  </div>
+
   <div class="error-box" id="mainError" style="display:block;display:none;"></div>
 </div>
 
 <script>
   const params = new URLSearchParams(window.location.search);
   const sessionId = params.get('session_id');
+  const purchaseType = params.get('type');
+
+  // Add-on purchases: show confirmation immediately, no account setup needed
+  if (purchaseType === 'essay_review' || purchaseType === 'short_review') {
+    document.getElementById('step1').style.display = 'none';
+    document.getElementById('step4').style.display = 'block';
+    if (purchaseType === 'essay_review') {
+      document.getElementById('addonTitle').textContent = 'Essay Review purchased!';
+      document.getElementById('addonSubtitle').textContent = 'Payment confirmed. Email TJ your personal statement or supplemental essay and you\'ll have detailed feedback within 48 hours.';
+      document.getElementById('addonEmailBtn').href = 'mailto:supertjwilson23@gmail.com?subject=Essay Review — The Common App Playbook';
+      document.getElementById('addonEmailBtn').textContent = 'Email your essay now \u2192';
+    } else {
+      document.getElementById('addonTitle').textContent = 'Short Review purchased!';
+      document.getElementById('addonSubtitle').textContent = 'Payment confirmed. Email TJ your activity descriptions or short responses and you\'ll have detailed feedback within 48 hours.';
+      document.getElementById('addonEmailBtn').href = 'mailto:supertjwilson23@gmail.com?subject=Short Answer Review — The Common App Playbook';
+      document.getElementById('addonEmailBtn').textContent = 'Email your responses now \u2192';
+    }
+  }
 
   async function verifyPayment() {
+    // Add-on purchases handled above
+    if (purchaseType === 'essay_review' || purchaseType === 'short_review') return;
+
     if (!sessionId) {
       showError('No session ID found. Please contact support.');
       return;
