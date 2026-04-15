@@ -59,31 +59,11 @@ app.post('/api/create-checkout', async (req, res) => {
     let lineItems, successUrl;
 
     if (type === 'essay_review') {
-      lineItems = [{
-        price_data: {
-          currency: 'usd',
-          product_data: {
-            name: 'Essay Review — The Common App Playbook',
-            description: 'Detailed written feedback on your personal statement or supplemental essay, plus one follow-up revision round.',
-          },
-          unit_amount: 1500,
-        },
-        quantity: 1,
-      }];
+      lineItems = [{ price: process.env.STRIPE_PRICE_ID_ESSAY, quantity: 1 }];
       successUrl = `${process.env.APP_URL}/success.html?session_id={CHECKOUT_SESSION_ID}&type=essay_review`;
 
     } else if (type === 'short_review') {
-      lineItems = [{
-        price_data: {
-          currency: 'usd',
-          product_data: {
-            name: 'Short Answer Review — The Common App Playbook',
-            description: 'Detailed written feedback on activity descriptions, additional info, or short supplemental responses.',
-          },
-          unit_amount: 1500,
-        },
-        quantity: 1,
-      }];
+      lineItems = [{ price: process.env.STRIPE_PRICE_ID_SHORT, quantity: 1 }];
       successUrl = `${process.env.APP_URL}/success.html?session_id={CHECKOUT_SESSION_ID}&type=short_review`;
 
     } else {
