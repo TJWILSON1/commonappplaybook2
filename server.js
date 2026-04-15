@@ -54,7 +54,8 @@ async function requireAuth(req, res, next) {
 // type: 'course' (default $35) | 'essay_review' ($15) | 'short_review' ($15)
 app.post('/api/create-checkout', async (req, res) => {
   try {
-    const type = req.body.type || 'course';
+    // Read type from query param (more reliable in serverless) or body fallback
+    const type = req.query.type || req.body.type || 'course';
     let lineItems, successUrl;
 
     if (type === 'essay_review') {
@@ -213,6 +214,99 @@ app.get('/course.html', requireAuth, (req, res) => {
 });
 
 app.use(express.static(path.join(__dirname, 'public')));
+
+// ── Review submission endpoints ───────────────────────────────────────────────
+
+// Return public Supabase config (anon key is safe to expose)
+app.get('/api/config', (req, res) => {
+  res.json({
+    supabaseUrl: process.env.SUPABASE_URL,
+    supabaseAnonKey: process.env.SUPABASE_ANON_KEY,
+  });
+});
+
+// Generate a signed upload URL — verifies Stripe payment first
+app.post('/api/get-upload-url', async (req, res) => {
+  const { session_id, filename, type } = req.body;
+  if (!session_id || !filename) {
+    return res.status(400).json({ error: 'Missing session_id or filename' });
+  }
+  try {
+    // Verify payment is real
+    const session = await stripe.checkout.sessions.retrieve(session_id);
+    if (session.payment_status !== 'paid') {
+      return res.status(402).json({ error: 'Payment not confirmed' });
+    }
+    // Clean filename and build storage path
+    const safeName = filename.replace(/[^a-zA-Z0-9._-]/g, '_');
+    const filePath = `${session_id}/${Date.now()}_${safeName}`;
+    // Create a signed URL so the browser can upload directly to Supabase Storage
+    const { data, error } = await supabaseAdmin.storage
+      .from('reviews')
+      .createSignedUploadUrl(filePath);
+    if (error) throw error;
+    res.json({ signedUrl: data.signedUrl, token: data.token, filePath });
+  } catch (err) {
+    console.error('Get upload URL error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Record completed submission + notify TJ
+app.post('/api/submit-review', async (req, res) => {
+  const { session_id, type, email, file_path } = req.body;
+  if (!session_id || !file_path) {
+    return res.status(400).json({ error: 'Missing required fields' });
+  }
+  try {
+    // Verify payment again
+    const session = await stripe.checkout.sessions.retrieve(session_id);
+    if (session.payment_status !== 'paid') {
+      return res.status(402).json({ error: 'Payment not confirmed' });
+    }
+    const studentEmail = email || session.customer_details?.email || 'unknown';
+    // Get public URL for the file
+    const { data: urlData } = supabaseAdmin.storage
+      .from('reviews')
+      .getPublicUrl(file_path);
+    // Store in submissions table
+    await supabaseAdmin.from('submissions').insert({
+      session_id,
+      type: type || 'essay_review',
+      email: studentEmail,
+      file_path,
+      file_url: urlData.publicUrl,
+      submitted_at: new Date().toISOString(),
+    });
+    // Send email notification to TJ if Resend is configured
+    if (process.env.RESEND_API_KEY) {
+      try {
+        const { Resend } = require('resend');
+        const resend = new Resend(process.env.RESEND_API_KEY);
+        const label = type === 'short_review' ? 'Short Answer Review' : 'Essay Review';
+        await resend.emails.send({
+          from: process.env.RESEND_FROM || 'onboarding@resend.dev',
+          to: 'supertjwilson23@gmail.com',
+          subject: `New ${label} Submission — The Common App Playbook`,
+          html: `
+            <h2>New ${label} submission</h2>
+            <p><strong>Student:</strong> ${studentEmail}</p>
+            <p><strong>Type:</strong> ${label}</p>
+            <p><strong>File:</strong> <a href="${urlData.publicUrl}">Download submission</a></p>
+            <p><strong>Submitted:</strong> ${new Date().toLocaleString()}</p>
+          `,
+        });
+      } catch (emailErr) {
+        // Non-fatal — submission is still recorded
+        console.error('Email notification failed:', emailErr.message);
+      }
+    }
+    res.json({ success: true });
+  } catch (err) {
+    console.error('Submit review error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
 
 // Stripe webhook — fires when payment completes
 async function handleStripeWebhook(req, res) {

@@ -891,10 +891,12 @@ async function startCheckout(e, type) {
   btn.disabled = true;
   btn.textContent = 'Loading…';
   try {
-    const res = await fetch('/api/create-checkout', {
+    // Pass type as query param — more reliable than body in serverless environments
+    const checkoutType = type || 'course';
+    const res = await fetch('/api/create-checkout?type=' + checkoutType, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ type: type || 'course' }),
+      body: JSON.stringify({}),
     });
     const data = await res.json();
     if (data.url) window.location.href = data.url;
