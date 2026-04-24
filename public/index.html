@@ -4,567 +4,984 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>The Common App Playbook — Get Into Your Dream School</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+<meta name="description" content="A step-by-step Common App course built by a UT Austin student who’s been through the process. $35 one-time, lifetime access, optional 1:1 feedback add-ons." />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-  :root {
-    --ink: #1a1410;
-    --ink-muted: #5a5249;
-    --ink-light: #9a948e;
-    --cream: #faf8f4;
-    --warm-white: #fff9f2;
-    --accent: #c4602a;
-    --accent-light: #f0ddd1;
-    --accent-dark: #8c3f15;
-    --gold: #c9a84c;
-    --gold-light: #f5edce;
-    --border: rgba(26,20,16,0.12);
-    --serif: 'Playfair Display', Georgia, serif;
-    --sans: 'DM Sans', system-ui, sans-serif;
-  }
+:root {
+  --bg: #0a0a0b;
+  --surface: #131315;
+  --surface-raised: #1a1a1d;
+  --surface-hi: #202024;
+  --border: rgba(255,255,255,0.07);
+  --border-strong: rgba(255,255,255,0.14);
+  --text: #edebe8;
+  --text-muted: rgba(237,235,232,0.55);
+  --text-dim: rgba(237,235,232,0.35);
+  --accent: #c4602a;
+  --accent-dark: #8c3f15;
+  --accent-light: #e08552;
+  --accent-glow: rgba(196,96,42,0.25);
+  --gold: #c9a84c;
+  --serif: 'Playfair Display', Georgia, serif;
+  --sans: 'DM Sans', system-ui, sans-serif;
+}
 
-  html { scroll-behavior: smooth; }
-  body {
-    font-family: var(--sans);
-    background: var(--warm-white);
-    color: var(--ink);
-    font-size: 16px;
-    line-height: 1.7;
-  }
+html { scroll-behavior: smooth; background: var(--bg); }
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 16px;
+  line-height: 1.7;
+  overflow-x: hidden;
+  position: relative;
+}
 
-  /* NAV */
-  nav {
-    position: sticky; top: 0; z-index: 100;
-    background: var(--warm-white);
-    border-bottom: 1px solid var(--border);
+/* Subtle grain overlay */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' opacity='0.7'/></svg>");
+  mix-blend-mode: overlay;
+}
+
+::selection { background: var(--accent); color: #fff; }
+
+/* ── NAV ── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  background: rgba(10,10,11,0.65);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border-bottom: 1px solid var(--border);
+  padding: 0 2.5rem;
+  display: flex; align-items: center; justify-content: space-between;
+  height: 68px;
+  transition: background 0.3s, border-color 0.3s;
+}
+nav.scrolled {
+  background: rgba(10,10,11,0.85);
+  border-bottom-color: var(--border-strong);
+}
+.nav-logo {
+  font-family: var(--serif);
+  font-size: 1.1rem; font-weight: 700;
+  color: var(--text); text-decoration: none;
+  letter-spacing: -0.01em;
+}
+.nav-logo em { color: var(--accent); font-style: normal; }
+.nav-links { display: flex; gap: 2.2rem; list-style: none; align-items: center; }
+.nav-links a {
+  font-size: 0.82rem; font-weight: 500;
+  text-decoration: none; color: var(--text-muted);
+  letter-spacing: 0.05em; text-transform: uppercase;
+  transition: color 0.2s; position: relative;
+}
+.nav-links a:hover { color: var(--text); }
+.nav-links a:not(.nav-cta)::after {
+  content: ''; position: absolute;
+  left: 0; bottom: -6px; height: 1px; width: 0;
+  background: var(--accent);
+  transition: width 0.3s ease;
+}
+.nav-links a:not(.nav-cta):hover::after { width: 100%; }
+.nav-cta {
+  background: var(--accent); color: #fff !important;
+  padding: 0.55rem 1.3rem; border-radius: 4px;
+  border: none; cursor: pointer;
+  font-family: var(--sans); font-size: 0.82rem; font-weight: 500;
+  letter-spacing: 0.05em; text-transform: uppercase;
+  transition: background 0.2s, transform 0.15s, box-shadow 0.2s !important;
+}
+.nav-cta:hover { background: var(--accent-dark) !important; transform: translateY(-1px); box-shadow: 0 6px 20px var(--accent-glow); }
+
+/* ── HERO ── */
+.hero {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  align-items: center;
+  gap: 5rem;
+  padding: 8rem 6rem 6rem 7rem;
+  position: relative;
+  overflow: hidden;
+  background: var(--bg);
+}
+.hero-orb {
+  position: absolute; z-index: 0;
+  width: 900px; height: 900px;
+  right: -300px; top: -200px;
+  background: radial-gradient(circle at center, rgba(196,96,42,0.35) 0%, rgba(196,96,42,0.08) 35%, transparent 65%);
+  filter: blur(40px);
+  animation: orbFloat 14s ease-in-out infinite;
+  pointer-events: none;
+}
+.hero-orb-2 {
+  position: absolute; z-index: 0;
+  width: 500px; height: 500px;
+  left: -150px; bottom: -200px;
+  background: radial-gradient(circle at center, rgba(201,168,76,0.15) 0%, transparent 60%);
+  filter: blur(50px);
+  animation: orbFloat 18s ease-in-out infinite reverse;
+  pointer-events: none;
+}
+@keyframes orbFloat {
+  0%, 100% { transform: translate(0,0) scale(1); }
+  50% { transform: translate(-40px, 30px) scale(1.08); }
+}
+.hero-text, .hero-card { position: relative; z-index: 2; }
+.hero-tag {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--gold);
+  border: 1px solid rgba(201,168,76,0.35);
+  padding: 0.35rem 0.9rem; border-radius: 2px;
+  margin-bottom: 2rem;
+  background: rgba(201,168,76,0.05);
+}
+.hero-tag::before {
+  content: ''; width: 6px; height: 6px; border-radius: 50%;
+  background: var(--gold);
+  box-shadow: 0 0 10px var(--gold);
+  animation: pulseDot 2s ease-in-out infinite;
+}
+@keyframes pulseDot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+.hero h1 {
+  font-family: var(--serif);
+  font-size: clamp(2.8rem, 5.5vw, 4.6rem);
+  font-weight: 900;
+  line-height: 1.03;
+  letter-spacing: -0.03em;
+  margin-bottom: 1.8rem;
+  color: var(--text);
+}
+.hero h1 .word { display: inline-block; overflow: hidden; padding: 0 0.04em; }
+.hero h1 .word-inner { display: inline-block; }
+.hero h1 em {
+  font-style: italic;
+  color: var(--accent);
+  position: relative;
+}
+.hero h1 em::after {
+  content: '';
+  position: absolute;
+  left: 0; right: 0; bottom: 0.05em;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent), transparent);
+  transform: scaleX(0); transform-origin: left;
+  transition: transform 0.8s ease 1.6s;
+}
+.hero.loaded h1 em::after { transform: scaleX(1); }
+.hero-sub {
+  font-size: 1.1rem;
+  line-height: 1.7;
+  color: var(--text-muted);
+  max-width: 520px;
+  margin-bottom: 2.5rem;
+}
+.hero-actions { display: flex; gap: 1.2rem; flex-wrap: wrap; align-items: center; }
+.btn-primary {
+  background: var(--accent);
+  color: #fff;
+  font-family: var(--sans);
+  font-size: 0.95rem; font-weight: 500;
+  padding: 1rem 2rem;
+  border: none; border-radius: 5px;
+  cursor: pointer; text-decoration: none;
+  display: inline-block;
+  position: relative; overflow: hidden;
+  transition: transform 0.2s;
+  box-shadow: 0 4px 20px rgba(196,96,42,0.3);
+}
+.btn-primary::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transform: translateX(-100%);
+  transition: transform 0.6s;
+}
+.btn-primary:hover::before { transform: translateX(100%); }
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(196,96,42,0.45); }
+.btn-ghost {
+  color: var(--text-muted);
+  font-size: 0.92rem;
+  text-decoration: none;
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  transition: color 0.2s, gap 0.2s;
+}
+.btn-ghost:hover { color: var(--text); gap: 0.7rem; }
+.hero-price-note {
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  margin-top: 1rem;
+}
+
+.hero-card {
+  background: linear-gradient(150deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01));
+  border: 1px solid var(--border-strong);
+  border-radius: 14px;
+  padding: 2.5rem;
+  backdrop-filter: blur(10px);
+  position: relative;
+  overflow: hidden;
+}
+.hero-card::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(400px at 0% 0%, rgba(196,96,42,0.1), transparent 60%);
+  pointer-events: none;
+}
+.hero-card-label {
+  font-size: 0.7rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 1.5rem;
+  position: relative;
+}
+.stat-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 1.5rem; margin-bottom: 2rem;
+  position: relative;
+}
+.stat { border-left: 2px solid var(--accent); padding-left: 1rem; }
+.stat-num {
+  font-family: var(--serif);
+  font-size: 2.2rem; font-weight: 700;
+  color: var(--text);
+  line-height: 1;
+  display: block;
+  margin-bottom: 0.3rem;
+}
+.stat-label {
+  font-size: 0.78rem;
+  color: var(--text-dim);
+  letter-spacing: 0.04em;
+}
+.hero-includes {
+  border-top: 1px solid var(--border);
+  padding-top: 1.5rem;
+  position: relative;
+}
+.hero-includes-title {
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 1rem;
+}
+.include-item {
+  display: flex; align-items: flex-start;
+  gap: 0.7rem;
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  margin-bottom: 0.6rem;
+}
+.check {
+  color: var(--gold);
+  font-size: 0.9rem;
+  flex-shrink: 0;
+  margin-top: 0.1rem;
+}
+
+.scroll-indicator {
+  position: absolute;
+  bottom: 2.5rem; left: 50%;
+  transform: translateX(-50%);
+  z-index: 3;
+  font-size: 0.72rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  display: flex; flex-direction: column; align-items: center; gap: 0.6rem;
+}
+.scroll-indicator::after {
+  content: '';
+  width: 1px; height: 30px;
+  background: linear-gradient(to bottom, var(--accent), transparent);
+  animation: scrollLine 2s ease-in-out infinite;
+}
+@keyframes scrollLine {
+  0% { transform: scaleY(0); transform-origin: top; }
+  50% { transform: scaleY(1); transform-origin: top; }
+  51% { transform-origin: bottom; }
+  100% { transform: scaleY(0); transform-origin: bottom; }
+}
+
+/* ── SECTIONS ── */
+section { padding: 7rem 7rem; position: relative; }
+.section-tag {
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 1rem;
+  display: inline-block;
+  padding-left: 2rem;
+  position: relative;
+}
+.section-tag::before {
+  content: ''; position: absolute;
+  left: 0; top: 50%;
+  width: 1.4rem; height: 1px;
+  background: var(--accent);
+}
+h2 {
+  font-family: var(--serif);
+  font-size: clamp(2rem, 3.8vw, 3.2rem);
+  font-weight: 900;
+  line-height: 1.08;
+  letter-spacing: -0.025em;
+  margin-bottom: 1.2rem;
+  color: var(--text);
+}
+h2 em { font-style: italic; color: var(--accent); }
+.section-sub {
+  font-size: 1.05rem;
+  color: var(--text-muted);
+  max-width: 580px;
+  line-height: 1.7;
+}
+.section-header { margin-bottom: 4.5rem; }
+
+/* ── ABOUT ── */
+.about {
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.about-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr;
+  gap: 5rem;
+  align-items: start;
+}
+.about-photo-wrapper {
+  position: sticky;
+  top: 100px;
+}
+.about-photo {
+  width: 100%;
+  aspect-ratio: 3/4;
+  background: var(--surface-raised);
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+  position: relative;
+  border: 1px solid var(--border);
+  box-shadow: 0 30px 80px rgba(0,0,0,0.5);
+}
+.about-photo::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(180deg, transparent 50%, rgba(10,10,11,0.5) 100%);
+  pointer-events: none;
+}
+.about-badges {
+  display: flex; flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1.2rem;
+}
+.badge {
+  font-size: 0.72rem;
+  font-weight: 500;
+  padding: 0.35rem 0.8rem;
+  border-radius: 20px;
+  background: rgba(196,96,42,0.12);
+  border: 1px solid rgba(196,96,42,0.25);
+  color: var(--accent-light);
+  letter-spacing: 0.02em;
+}
+.about-content h2 { margin-bottom: 0.8rem; }
+.about-content .section-tag { margin-bottom: 0.8rem; }
+.about-bio {
+  font-size: 1.08rem;
+  line-height: 1.85;
+  color: var(--text-muted);
+  margin-bottom: 2rem;
+  min-height: 200px;
+}
+.about-bio p {
+  margin-bottom: 1.2rem;
+  opacity: 0;
+}
+.about-bio p.visible { opacity: 1; }
+.typing-cursor {
+  display: inline-block;
+  width: 3px; height: 1.1em;
+  background: var(--accent);
+  margin-left: 2px;
+  vertical-align: text-bottom;
+  border-radius: 1px;
+  animation: blinkCaret 0.75s step-end infinite;
+  box-shadow: 0 0 6px var(--accent-glow);
+}
+@keyframes blinkCaret {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.credential-list {
+  list-style: none;
+  display: flex; flex-direction: column;
+  gap: 0.9rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border);
+}
+.credential-list li {
+  display: flex;
+  gap: 0.9rem;
+  align-items: flex-start;
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  opacity: 0;
+  transform: translateY(12px);
+}
+.credential-list li.show {
+  opacity: 1; transform: translateY(0);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.cred-icon {
+  color: var(--accent);
+  font-size: 0.85rem;
+  flex-shrink: 0;
+  margin-top: 0.35rem;
+}
+
+/* ── CURRICULUM (horizontal scroll) ── */
+.curriculum {
+  background: var(--bg);
+  padding: 0;
+  overflow: hidden;
+}
+.curriculum-intro {
+  padding: 1.2rem 7rem 0.8rem;
+  max-width: 1200px;
+}
+.curriculum-scroll-container {
+  height: calc(100vh - 110px);
+  position: relative;
+  overflow: hidden;
+}
+.curriculum-track {
+  display: flex;
+  gap: 1.8rem;
+  padding: 0 7rem;
+  height: 100%;
+  align-items: center;
+  will-change: transform;
+}
+.module-card {
+  flex: 0 0 360px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 2rem 2rem 1.8rem;
+  transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s;
+  position: relative;
+  overflow: hidden;
+  height: 400px;
+  display: flex; flex-direction: column;
+}
+.module-card::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(500px circle at var(--mx, 50%) var(--my, 50%), rgba(196,96,42,0.08), transparent 40%);
+  opacity: 0;
+  transition: opacity 0.4s;
+  pointer-events: none;
+}
+.module-card:hover {
+  border-color: rgba(196,96,42,0.35);
+  transform: translateY(-4px);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+}
+.module-card:hover::before { opacity: 1; }
+.module-num {
+  font-size: 0.72rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 1rem;
+  display: flex; align-items: center; gap: 0.6rem;
+  font-weight: 500;
+}
+.module-num::before {
+  content: '';
+  width: 20px; height: 1px;
+  background: var(--accent);
+}
+.module-card h3 {
+  font-family: var(--serif);
+  font-size: 1.35rem;
+  font-weight: 700;
+  margin-bottom: 0.9rem;
+  color: var(--text);
+  line-height: 1.25;
+}
+.module-card > p {
+  font-size: 0.92rem;
+  color: var(--text-muted);
+  line-height: 1.7;
+  margin-bottom: 1.3rem;
+  flex-grow: 0;
+}
+.module-topics { list-style: none; margin-top: auto; }
+.module-topics li {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  padding: 0.55rem 0;
+  border-top: 1px solid var(--border);
+  display: flex; align-items: center; gap: 0.6rem;
+}
+.module-topics li::before {
+  content: '→';
+  color: var(--accent);
+  font-size: 0.82rem;
+  transition: transform 0.2s;
+}
+.module-card:hover .module-topics li::before { transform: translateX(3px); }
+.curriculum-progress {
+  position: absolute;
+  bottom: 3rem; left: 7rem; right: 7rem;
+  height: 2px;
+  background: var(--border);
+  border-radius: 1px;
+  overflow: hidden;
+}
+.curriculum-progress-fill {
+  height: 100%;
+  background: var(--accent);
+  width: 0%;
+  transform-origin: left;
+}
+
+/* ── PRICING ── */
+.pricing {
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  max-width: 1080px;
+}
+.pricing-card {
+  background: var(--surface-raised);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 2.3rem 2rem;
+  position: relative;
+  transition: border-color 0.3s, transform 0.3s;
+}
+.pricing-card:hover { border-color: var(--border-strong); transform: translateY(-3px); }
+.pricing-card.featured {
+  border-color: var(--accent);
+  background: linear-gradient(180deg, rgba(196,96,42,0.08), rgba(196,96,42,0.01));
+  box-shadow: 0 0 0 1px var(--accent), 0 30px 70px rgba(196,96,42,0.1);
+}
+.pricing-card.featured::before {
+  content: '';
+  position: absolute; inset: -1px;
+  border-radius: 12px;
+  padding: 1px;
+  background: linear-gradient(135deg, var(--accent), transparent, var(--accent));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: borderRotate 6s linear infinite;
+  background-size: 200% 200%;
+  opacity: 0.5;
+  pointer-events: none;
+}
+@keyframes borderRotate {
+  0% { background-position: 0% 0%; }
+  100% { background-position: 200% 200%; }
+}
+.featured-badge {
+  position: absolute;
+  top: -12px; left: 50%; transform: translateX(-50%);
+  background: var(--accent);
+  color: #fff;
+  font-size: 0.68rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 0.3rem 0.9rem;
+  border-radius: 20px;
+  white-space: nowrap;
+  font-weight: 500;
+  box-shadow: 0 4px 20px rgba(196,96,42,0.4);
+}
+.pricing-tier {
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 1rem;
+  display: block;
+}
+.pricing-card h3 {
+  font-family: var(--serif);
+  font-size: 1.35rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  color: var(--text);
+}
+.pricing-amount {
+  margin: 1.3rem 0;
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+}
+.price-num {
+  font-family: var(--serif);
+  font-size: 3rem;
+  font-weight: 900;
+  color: var(--text);
+  line-height: 1;
+}
+.price-num::before { content: '$'; font-size: 0.6em; vertical-align: super; margin-right: 0.05em; }
+.price-label {
+  font-size: 0.85rem;
+  color: var(--text-dim);
+}
+.pricing-desc {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  line-height: 1.7;
+  margin-bottom: 1.6rem;
+  padding-bottom: 1.6rem;
+  border-bottom: 1px solid var(--border);
+}
+.pricing-features { list-style: none; margin-bottom: 2rem; }
+.pricing-features li {
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  padding: 0.45rem 0;
+  display: flex;
+  gap: 0.7rem;
+  align-items: flex-start;
+}
+.feat-check { color: var(--gold); flex-shrink: 0; }
+.btn-pricing {
+  display: block;
+  width: 100%;
+  text-align: center;
+  padding: 0.95rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-decoration: none;
+  font-family: var(--sans);
+  cursor: pointer;
+  transition: all 0.25s;
+}
+.btn-pricing-outline {
+  border: 1px solid var(--border-strong);
+  color: var(--text);
+  background: transparent;
+}
+.btn-pricing-outline:hover {
+  border-color: var(--accent);
+  background: rgba(196,96,42,0.08);
+  color: var(--accent-light);
+}
+.btn-pricing-fill {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  box-shadow: 0 4px 20px rgba(196,96,42,0.3);
+}
+.btn-pricing-fill:hover {
+  background: var(--accent-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 30px rgba(196,96,42,0.45);
+}
+
+/* ── TESTIMONIALS ── */
+.testimonials { background: var(--bg); }
+/* Marquee track */
+.testi-marquee-outer {
+  overflow: hidden;
+  padding-bottom: 0.75rem;
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
+  mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
+}
+.testi-marquee {
+  display: flex;
+  gap: 1.5rem;
+  width: max-content;
+  animation: marqueeScroll 40s linear infinite;
+  padding-bottom: 0.5rem;
+}
+.testi-marquee:hover { animation-play-state: paused; }
+@keyframes marqueeScroll {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.testi-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.75rem;
+  width: 320px;
+  flex-shrink: 0;
+  transition: border-color 0.3s, transform 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+.testi-card::before {
+  content: '"';
+  position: absolute;
+  top: -20px; right: 15px;
+  font-family: var(--serif);
+  font-size: 8rem;
+  color: var(--accent);
+  opacity: 0.08;
+  line-height: 1;
+}
+.testi-card:hover { border-color: var(--border-strong); transform: translateY(-3px); }
+.testi-stars {
+  color: var(--gold);
+  font-size: 0.95rem;
+  margin-bottom: 1.2rem;
+  letter-spacing: 0.1em;
+}
+.testi-quote {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 1.02rem;
+  color: var(--text);
+  line-height: 1.75;
+  margin-bottom: 1.6rem;
+  position: relative;
+  z-index: 1;
+}
+.testi-author { display: flex; align-items: center; gap: 0.9rem; }
+.testi-avatar {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  background: rgba(196,96,42,0.15);
+  border: 1px solid rgba(196,96,42,0.3);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.82rem; font-weight: 500;
+  color: var(--accent-light);
+  flex-shrink: 0;
+}
+.testi-name {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text);
+}
+.testi-school {
+  font-size: 0.78rem;
+  color: var(--text-dim);
+}
+
+/* ── FAQ ── */
+.faq { background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+.faq-grid {
+  display: flex; flex-direction: column;
+  gap: 0.7rem;
+  max-width: 860px;
+}
+.faq-item {
+  background: var(--surface-raised);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  transition: border-color 0.3s;
+}
+.faq-item:hover { border-color: var(--border-strong); }
+.faq-item.open { border-color: rgba(196,96,42,0.35); }
+.faq-q {
+  padding: 1.3rem 1.7rem;
+  font-family: var(--serif);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text);
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  user-select: none;
+  transition: color 0.2s;
+}
+.faq-q:hover { color: var(--accent-light); }
+.faq-q-icon {
+  width: 22px; height: 22px;
+  border: 1px solid var(--border-strong);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  margin-left: 1rem;
+  color: var(--accent);
+  font-size: 0.9rem;
+  transition: transform 0.3s, border-color 0.3s;
+}
+.faq-item.open .faq-q-icon { transform: rotate(45deg); border-color: var(--accent); }
+.faq-a-wrap {
+  max-height: 0;
+  overflow: hidden;
+}
+.faq-a {
+  padding: 0 1.7rem 1.3rem;
+  font-size: 0.93rem;
+  color: var(--text-muted);
+  line-height: 1.75;
+}
+
+/* ── FINAL CTA ── */
+.final-cta {
+  background: var(--bg);
+  color: #fff;
+  text-align: center;
+  padding: 8rem 2rem;
+  position: relative;
+  overflow: hidden;
+}
+.final-cta-bg {
+  position: absolute; inset: 0;
+  background: radial-gradient(600px circle at 50% 50%, rgba(196,96,42,0.15), transparent 60%);
+  animation: pulseGlow 5s ease-in-out infinite;
+}
+@keyframes pulseGlow {
+  0%, 100% { opacity: 0.6; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.1); }
+}
+.final-cta-content { position: relative; z-index: 2; max-width: 800px; margin: 0 auto; }
+.final-cta h2 {
+  color: var(--text);
+  font-size: clamp(2.2rem, 4.5vw, 3.6rem);
+  margin-bottom: 1.4rem;
+  line-height: 1.1;
+}
+.final-cta h2 .w { display: inline-block; overflow: hidden; padding: 0 0.04em; }
+.final-cta h2 .w-inner { display: inline-block; }
+.final-cta p {
+  font-size: 1.1rem;
+  color: var(--text-muted);
+  max-width: 560px;
+  margin: 0 auto 2.8rem;
+}
+.btn-white {
+  background: var(--accent);
+  color: #fff;
+  font-family: var(--sans);
+  font-size: 1rem;
+  font-weight: 500;
+  padding: 1.1rem 2.8rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 10px 40px rgba(196,96,42,0.45);
+}
+.btn-white::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent);
+  transform: translateX(-100%);
+  transition: transform 0.7s;
+}
+.btn-white:hover::before { transform: translateX(100%); }
+.btn-white:hover { transform: translateY(-3px); box-shadow: 0 14px 50px rgba(196,96,42,0.55); }
+.cta-money-back {
+  margin-top: 1.4rem;
+  font-size: 0.82rem;
+  color: var(--text-dim);
+}
+
+/* ── FOOTER ── */
+footer {
+  background: var(--bg);
+  color: var(--text-dim);
+  padding: 2.5rem 7rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.82rem;
+  border-top: 1px solid var(--border);
+}
+footer a { color: var(--text-dim); text-decoration: none; transition: color 0.2s; }
+footer a:hover { color: var(--text-muted); }
+.footer-links { display: flex; gap: 1.8rem; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 960px) {
+  section { padding: 5rem 2rem; }
+  .hero { grid-template-columns: 1fr; padding: 6rem 2rem 4rem; min-height: auto; gap: 3rem; }
+  .hero-orb { width: 500px; height: 500px; right: -200px; }
+  .hero-orb-2 { display: none; }
+  .scroll-indicator { display: none; }
+  .about-grid { grid-template-columns: 1fr; gap: 3rem; }
+  .about-photo-wrapper { position: static; }
+  .about-photo { aspect-ratio: 4/3; max-height: 320px; }
+  .curriculum-intro { padding: 2rem 2rem 1rem; }
+  .curriculum-scroll-container { height: auto; }
+  .curriculum-track {
     padding: 0 2rem;
-    display: flex; align-items: center; justify-content: space-between;
-    height: 60px;
+    flex-wrap: wrap;
+    height: auto;
+    gap: 1.2rem;
   }
-  .nav-logo {
-    font-family: var(--serif);
-    font-size: 1.1rem;
-    font-weight: 700;
-    color: var(--ink);
-    text-decoration: none;
-    letter-spacing: -0.01em;
-  }
-  .nav-links { display: flex; gap: 2rem; list-style: none; }
-  .nav-links a {
-    font-size: 0.85rem;
-    font-weight: 500;
-    text-decoration: none;
-    color: var(--ink-muted);
-    letter-spacing: 0.03em;
-    text-transform: uppercase;
-    transition: color 0.2s;
-  }
-  .nav-links a:hover { color: var(--accent); }
-  .nav-cta {
-    background: var(--accent);
-    color: #fff !important;
-    padding: 0.45rem 1.2rem;
-    border-radius: 4px;
-    transition: background 0.2s !important;
-  }
-  .nav-cta:hover { background: var(--accent-dark) !important; }
+  .module-card { flex: 1 1 100%; height: auto; min-height: 360px; }
+  .curriculum-progress { display: none; }
+  .pricing-grid { grid-template-columns: 1fr; }
+  nav { padding: 0 1.5rem; }
+  .nav-links { gap: 1rem; }
+  .nav-links a:not(.nav-cta) { display: none; }
+  footer { flex-direction: column; gap: 1rem; text-align: center; padding: 2rem; }
+  .final-cta { padding: 5rem 2rem; }
+}
 
-  /* HERO */
-  .hero {
-    background: var(--ink);
-    color: var(--cream);
-    min-height: 88vh;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    align-items: center;
-    gap: 4rem;
-    padding: 6rem 6rem 6rem 7rem;
-    position: relative;
-    overflow: hidden;
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
-  .hero::before {
-    content: '';
-    position: absolute;
-    top: -40%;
-    right: -10%;
-    width: 70%;
-    height: 180%;
-    background: radial-gradient(ellipse, rgba(196,96,42,0.18) 0%, transparent 65%);
-    pointer-events: none;
-  }
-  .hero-tag {
-    display: inline-block;
-    font-size: 0.72rem;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--gold);
-    border: 1px solid rgba(201,168,76,0.4);
-    padding: 0.3rem 0.8rem;
-    border-radius: 2px;
-    margin-bottom: 1.5rem;
-  }
-  .hero h1 {
-    font-family: var(--serif);
-    font-size: clamp(2.8rem, 5vw, 4.2rem);
-    font-weight: 900;
-    line-height: 1.07;
-    letter-spacing: -0.025em;
-    margin-bottom: 1.5rem;
-  }
-  .hero h1 em {
-    font-style: italic;
-    color: var(--accent);
-  }
-  .hero-sub {
-    font-size: 1.1rem;
-    line-height: 1.65;
-    color: rgba(250,248,244,0.7);
-    max-width: 480px;
-    margin-bottom: 2.5rem;
-  }
-  .hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; align-items: center; }
-  .btn-primary {
-    background: var(--accent);
-    color: #fff;
-    font-family: var(--sans);
-    font-size: 0.95rem;
-    font-weight: 500;
-    padding: 0.9rem 2rem;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    text-decoration: none;
-    display: inline-block;
-    transition: background 0.2s, transform 0.15s;
-  }
-  .btn-primary:hover { background: var(--accent-dark); transform: translateY(-1px); }
-  .btn-ghost {
-    color: rgba(250,248,244,0.75);
-    font-size: 0.9rem;
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    transition: color 0.2s;
-  }
-  .btn-ghost:hover { color: var(--cream); }
-  .hero-price-note {
-    font-size: 0.8rem;
-    color: rgba(250,248,244,0.45);
-    margin-top: 0.8rem;
-  }
+}
 
-  .hero-card {
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 12px;
-    padding: 2.5rem;
-    backdrop-filter: blur(4px);
-  }
-  .hero-card-label {
-    font-size: 0.72rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--gold);
-    margin-bottom: 1.2rem;
-  }
-  .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem; }
-  .stat { border-left: 2px solid var(--accent); padding-left: 0.9rem; }
-  .stat-num {
-    font-family: var(--serif);
-    font-size: 2rem;
-    font-weight: 700;
-    color: var(--cream);
-    line-height: 1;
-    display: block;
-    margin-bottom: 0.2rem;
-  }
-  .stat-label { font-size: 0.78rem; color: rgba(250,248,244,0.5); }
-  .hero-includes { border-top: 1px solid rgba(255,255,255,0.08); padding-top: 1.5rem; }
-  .hero-includes-title { font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(250,248,244,0.4); margin-bottom: 0.8rem; }
-  .include-item {
-    display: flex; align-items: flex-start; gap: 0.6rem;
-    font-size: 0.88rem;
-    color: rgba(250,248,244,0.7);
-    margin-bottom: 0.5rem;
-  }
-  .check { color: var(--gold); font-size: 0.9rem; flex-shrink: 0; margin-top: 0.05rem; }
-
-  /* SECTION SHARED */
-  section { padding: 6rem 7rem; }
-  .section-tag {
-    font-size: 0.7rem;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--accent);
-    margin-bottom: 0.8rem;
-    display: block;
-  }
-  h2 {
-    font-family: var(--serif);
-    font-size: clamp(2rem, 3.5vw, 2.8rem);
-    font-weight: 900;
-    line-height: 1.1;
-    letter-spacing: -0.02em;
-    margin-bottom: 1rem;
-    color: var(--ink);
-  }
-  .section-sub {
-    font-size: 1.05rem;
-    color: var(--ink-muted);
-    max-width: 520px;
-    line-height: 1.7;
-  }
-  .section-header { margin-bottom: 4rem; }
-
-  /* ABOUT */
-  .about { background: var(--cream); }
-  .about-grid {
-    display: grid;
-    grid-template-columns: 1fr 1.6fr;
-    gap: 6rem;
-    align-items: start;
-  }
-  .about-photo-wrapper {
-    position: sticky;
-    top: 90px;
-  }
-  .about-photo {
-    width: 100%;
-    aspect-ratio: 3/4;
-    background: #d5ccc3;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-    position: relative;
-  }
-  .photo-placeholder {
-    text-align: center;
-    color: rgba(26,20,16,0.35);
-  }
-  .photo-placeholder .icon { font-size: 3rem; display: block; margin-bottom: 0.5rem; }
-  .photo-placeholder p { font-size: 0.82rem; line-height: 1.5; max-width: 140px; }
-  .about-badges { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 1.2rem; }
-  .badge {
-    font-size: 0.75rem;
-    font-weight: 500;
-    padding: 0.3rem 0.75rem;
-    border-radius: 20px;
-    background: var(--accent-light);
-    color: var(--accent-dark);
-  }
-  .about-content h2 { margin-bottom: 0.5rem; }
-  .about-content .section-tag { margin-bottom: 0.5rem; }
-  .about-bio {
-    font-size: 1.05rem;
-    line-height: 1.8;
-    color: var(--ink-muted);
-    margin-bottom: 1.5rem;
-  }
-  .about-bio p { margin-bottom: 1rem; }
-  .credential-list { list-style: none; display: flex; flex-direction: column; gap: 0.8rem; }
-  .credential-list li {
-    display: flex; gap: 0.8rem; align-items: flex-start;
-    font-size: 0.95rem;
-    color: var(--ink-muted);
-  }
-  .cred-icon { color: var(--accent); font-size: 1rem; flex-shrink: 0; margin-top: 0.1rem; }
-
-  /* CURRICULUM */
-  .curriculum { background: var(--warm-white); }
-  .curriculum-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: 1.5rem;
-  }
-  .module-card {
-    background: var(--cream);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 1.8rem;
-    transition: border-color 0.2s, transform 0.2s;
-  }
-  .module-card:hover { border-color: var(--accent); transform: translateY(-2px); }
-  .module-num {
-    font-size: 0.7rem;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: var(--accent);
-    margin-bottom: 0.6rem;
-    display: block;
-  }
-  .module-card h3 {
-    font-family: var(--serif);
-    font-size: 1.15rem;
-    font-weight: 700;
-    margin-bottom: 0.7rem;
-    color: var(--ink);
-    line-height: 1.3;
-  }
-  .module-card p {
-    font-size: 0.9rem;
-    color: var(--ink-muted);
-    line-height: 1.65;
-    margin-bottom: 1rem;
-  }
-  .module-topics { list-style: none; }
-  .module-topics li {
-    font-size: 0.83rem;
-    color: var(--ink-muted);
-    padding: 0.3rem 0;
-    border-top: 1px solid var(--border);
-    display: flex; align-items: center; gap: 0.5rem;
-  }
-  .module-topics li::before { content: '→'; color: var(--accent); font-size: 0.8rem; }
-
-  /* PRICING */
-  .pricing { background: var(--ink); color: var(--cream); }
-  .pricing h2 { color: var(--cream); }
-  .pricing .section-sub { color: rgba(250,248,244,0.6); }
-  .pricing-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1.5rem;
-    max-width: 960px;
-  }
-  .pricing-card {
-    border: 1px solid rgba(255,255,255,0.12);
-    border-radius: 10px;
-    padding: 2rem;
-    position: relative;
-    transition: border-color 0.2s;
-  }
-  .pricing-card:hover { border-color: rgba(255,255,255,0.3); }
-  .pricing-card.featured {
-    border-color: var(--accent);
-    background: rgba(196,96,42,0.08);
-  }
-  .featured-badge {
-    position: absolute;
-    top: -12px; left: 50%; transform: translateX(-50%);
-    background: var(--accent);
-    color: #fff;
-    font-size: 0.7rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    padding: 0.25rem 0.8rem;
-    border-radius: 20px;
-    white-space: nowrap;
-  }
-  .pricing-tier {
-    font-size: 0.72rem;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: var(--gold);
-    margin-bottom: 0.8rem;
-    display: block;
-  }
-  .pricing-card h3 {
-    font-family: var(--serif);
-    font-size: 1.25rem;
-    font-weight: 700;
-    margin-bottom: 0.5rem;
-    color: var(--cream);
-  }
-  .pricing-amount {
-    margin: 1.2rem 0;
-    display: flex;
-    align-items: baseline;
-    gap: 0.3rem;
-  }
-  .price-num {
-    font-family: var(--serif);
-    font-size: 2.8rem;
-    font-weight: 900;
-    color: var(--cream);
-    line-height: 1;
-  }
-  .price-label { font-size: 0.85rem; color: rgba(250,248,244,0.45); }
-  .pricing-desc {
-    font-size: 0.88rem;
-    color: rgba(250,248,244,0.55);
-    line-height: 1.6;
-    margin-bottom: 1.5rem;
-    padding-bottom: 1.5rem;
-    border-bottom: 1px solid rgba(255,255,255,0.08);
-  }
-  .pricing-features { list-style: none; margin-bottom: 2rem; }
-  .pricing-features li {
-    font-size: 0.88rem;
-    color: rgba(250,248,244,0.7);
-    padding: 0.4rem 0;
-    display: flex; gap: 0.6rem; align-items: flex-start;
-  }
-  .feat-check { color: var(--gold); flex-shrink: 0; }
-  .btn-pricing {
-    display: block;
-    text-align: center;
-    padding: 0.85rem;
-    border-radius: 5px;
-    font-size: 0.9rem;
-    font-weight: 500;
-    text-decoration: none;
-    transition: all 0.2s;
-    cursor: pointer;
-  }
-  .btn-pricing-outline {
-    border: 1px solid rgba(255,255,255,0.25);
-    color: var(--cream);
-    background: transparent;
-  }
-  .btn-pricing-outline:hover { border-color: rgba(255,255,255,0.6); background: rgba(255,255,255,0.05); }
-  .btn-pricing-fill {
-    background: var(--accent);
-    color: #fff;
-    border: none;
-  }
-  .btn-pricing-fill:hover { background: var(--accent-dark); }
-
-  /* TESTIMONIALS */
-  .testimonials { background: var(--cream); }
-  .testi-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 1.5rem;
-  }
-  .testi-card {
-    background: var(--warm-white);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 1.8rem;
-  }
-  .testi-stars { color: var(--gold); font-size: 0.9rem; margin-bottom: 1rem; letter-spacing: 0.1em; }
-  .testi-quote {
-    font-family: var(--serif);
-    font-style: italic;
-    font-size: 1rem;
-    color: var(--ink);
-    line-height: 1.7;
-    margin-bottom: 1.5rem;
-  }
-  .testi-author { display: flex; align-items: center; gap: 0.8rem; }
-  .testi-avatar {
-    width: 36px; height: 36px; border-radius: 50%;
-    background: var(--accent-light);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 0.8rem;
-    font-weight: 500;
-    color: var(--accent-dark);
-    flex-shrink: 0;
-  }
-  .testi-name { font-size: 0.88rem; font-weight: 500; color: var(--ink); }
-  .testi-school { font-size: 0.78rem; color: var(--ink-muted); }
-
-  /* FAQ */
-  .faq { background: var(--warm-white); }
-  .faq-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; max-width: 900px; }
-  .faq-item {
-    background: var(--cream);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 1.5rem;
-  }
-  .faq-q {
-    font-family: var(--serif);
-    font-size: 1rem;
-    font-weight: 700;
-    color: var(--ink);
-    margin-bottom: 0.6rem;
-  }
-  .faq-a {
-    font-size: 0.9rem;
-    color: var(--ink-muted);
-    line-height: 1.65;
-  }
-
-  /* FINAL CTA */
-  .final-cta {
-    background: var(--accent);
-    color: #fff;
-    text-align: center;
-    padding: 7rem;
-  }
-  .final-cta h2 {
-    color: #fff;
-    font-size: clamp(2.2rem, 4vw, 3.2rem);
-    margin-bottom: 1rem;
-  }
-  .final-cta p {
-    font-size: 1.1rem;
-    opacity: 0.85;
-    max-width: 500px;
-    margin: 0 auto 2.5rem;
-  }
-  .btn-white {
-    background: #fff;
-    color: var(--accent-dark);
-    font-family: var(--sans);
-    font-size: 1rem;
-    font-weight: 500;
-    padding: 1rem 2.5rem;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    text-decoration: none;
-    display: inline-block;
-    transition: transform 0.15s, box-shadow 0.15s;
-  }
-  .btn-white:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.15); }
-  .cta-money-back {
-    margin-top: 1.2rem;
-    font-size: 0.82rem;
-    opacity: 0.65;
-  }
-
-  /* FOOTER */
-  footer {
-    background: var(--ink);
-    color: rgba(250,248,244,0.4);
-    padding: 2.5rem 7rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    font-size: 0.82rem;
-  }
-  footer a { color: rgba(250,248,244,0.4); text-decoration: none; }
-  footer a:hover { color: rgba(250,248,244,0.7); }
-  .footer-links { display: flex; gap: 1.5rem; }
-
-  /* RESPONSIVE */
-  @media (max-width: 960px) {
-    section { padding: 4rem 2rem; }
-    .hero { grid-template-columns: 1fr; padding: 4rem 2rem; min-height: auto; gap: 3rem; }
-    .hero::before { display: none; }
-    .about-grid { grid-template-columns: 1fr; gap: 3rem; }
-    .about-photo-wrapper { position: static; }
-    .about-photo { aspect-ratio: 4/3; max-height: 280px; }
-    .pricing-grid { grid-template-columns: 1fr; }
-    .faq-grid { grid-template-columns: 1fr; }
-    nav { padding: 0 1.5rem; }
-    .nav-links { display: none; }
-    footer { flex-direction: column; gap: 1rem; text-align: center; padding: 2rem; }
-    .final-cta { padding: 4rem 2rem; }
-  }
 </style>
 </head>
 <body>
 
 <!-- NAV -->
 <nav>
-  <a class="nav-logo" href="#">The Common App Playbook</a>
+  <a class="nav-logo" href="#">The Common App <em>Playbook</em></a>
   <ul class="nav-links">
     <li><a href="#about">About</a></li>
     <li><a href="#curriculum">Curriculum</a></li>
     <li><a href="#pricing">Pricing</a></li>
-    <li><button onclick="startCheckout()" class="nav-cta" style="cursor:pointer;border:none;font-family:var(--sans);font-size:0.85rem;letter-spacing:0.03em;text-transform:uppercase;font-weight:500;">Enroll — $35</button></li>
+    <li><button onclick="startCheckout()" class="nav-cta">Enroll — $35</button></li>
   </ul>
 </nav>
 
 <!-- HERO -->
 <section class="hero">
+  <div class="hero-orb"></div>
+  <div class="hero-orb-2"></div>
+
   <div class="hero-text">
     <span class="hero-tag">College Admissions Course</span>
     <h1>Write a Common App that <em>opens doors.</em></h1>
@@ -575,6 +992,7 @@
     </div>
     <p class="hero-price-note">One-time purchase · Lifetime access · Optional 1:1 feedback add-ons</p>
   </div>
+
   <div class="hero-card">
     <p class="hero-card-label">What's inside</p>
     <div class="stat-grid">
@@ -604,6 +1022,8 @@
       <div class="include-item"><span class="check">✓</span> Approach supplemental essays strategically</div>
     </div>
   </div>
+
+  <div class="scroll-indicator">Scroll</div>
 </section>
 
 <!-- ABOUT -->
@@ -635,94 +1055,97 @@
   </div>
 </section>
 
-<!-- CURRICULUM -->
+<!-- CURRICULUM (horizontal scroll) -->
 <section class="curriculum" id="curriculum">
-  <div class="section-header">
+  <div class="curriculum-intro">
     <span class="section-tag">Course Curriculum</span>
-    <h2>Every section, covered.</h2>
-    <p class="section-sub">The Common App has a lot of moving parts. This course walks through each one with real examples and clear direction — so nothing gets left to guesswork.</p>
+    <h2>Every section, <em>covered.</em></h2>
+    <p class="section-sub">The Common App has a lot of moving parts. This course walks through each one with real examples and clear direction — so nothing gets left to guesswork. Scroll →</p>
   </div>
-  <div class="curriculum-grid">
-    <div class="module-card">
-      <span class="module-num">Module 01</span>
-      <h3>Introduction & Strategy</h3>
-      <p>Overview of the Common App, how colleges use it, and how to approach the whole process strategically from the start.</p>
-      <ul class="module-topics">
-        <li>What colleges are really looking for</li>
-        <li>Timeline & planning your application</li>
-        <li>Common mistakes to avoid early</li>
-      </ul>
+  <div class="curriculum-scroll-container">
+    <div class="curriculum-track">
+      <div class="module-card">
+        <span class="module-num">Module 01</span>
+        <h3>Introduction &amp; Strategy</h3>
+        <p>Overview of the Common App, how colleges use it, and how to approach the whole process strategically from the start.</p>
+        <ul class="module-topics">
+          <li>What colleges are really looking for</li>
+          <li>Timeline &amp; planning your application</li>
+          <li>Common mistakes to avoid early</li>
+        </ul>
+      </div>
+      <div class="module-card">
+        <span class="module-num">Module 02</span>
+        <h3>Profile &amp; Background Sections</h3>
+        <p>The basics of the Common App profile, demographics, and how to fill in your personal information accurately and strategically.</p>
+        <ul class="module-topics">
+          <li>Residency and citizenship sections</li>
+          <li>Family background questions</li>
+          <li>How to answer sensitive questions</li>
+        </ul>
+      </div>
+      <div class="module-card">
+        <span class="module-num">Module 03</span>
+        <h3>Academics &amp; Testing</h3>
+        <p>How to present your GPA, transcripts, and test scores in the best possible light — even if they aren't perfect.</p>
+        <ul class="module-topics">
+          <li>Entering grades and course rigor</li>
+          <li>SAT / ACT reporting strategy</li>
+          <li>Handling course explanations</li>
+        </ul>
+      </div>
+      <div class="module-card">
+        <span class="module-num">Module 04</span>
+        <h3>Activities &amp; Extracurriculars</h3>
+        <p>The activities section is one of the most underutilized parts of the Common App. Learn how to tell your story through what you've done.</p>
+        <ul class="module-topics">
+          <li>Ranking your activities strategically</li>
+          <li>Writing 150-character descriptions that pop</li>
+          <li>Showing leadership and impact</li>
+        </ul>
+      </div>
+      <div class="module-card">
+        <span class="module-num">Module 05</span>
+        <h3>The Personal Essay</h3>
+        <p>The heart of the application. Learn how to choose a topic, find your voice, and write an essay that admissions officers remember.</p>
+        <ul class="module-topics">
+          <li>Breaking down the 7 prompts</li>
+          <li>Brainstorming your unique story</li>
+          <li>Draft, revise, and finalize</li>
+        </ul>
+      </div>
+      <div class="module-card">
+        <span class="module-num">Module 06</span>
+        <h3>Additional Information Section</h3>
+        <p>Most students leave this blank. Learn when and how to use it strategically to address gaps, context, or extra achievements.</p>
+        <ul class="module-topics">
+          <li>When to use vs. leave blank</li>
+          <li>Addressing low grades or gaps</li>
+          <li>Adding accomplishments that didn't fit</li>
+        </ul>
+      </div>
+      <div class="module-card">
+        <span class="module-num">Module 07</span>
+        <h3>Recommenders &amp; School Reports</h3>
+        <p>How to choose the right recommenders, approach them professionally, and set them up to write the strongest letters possible.</p>
+        <ul class="module-topics">
+          <li>Choosing your recommenders wisely</li>
+          <li>How to ask (with templates)</li>
+          <li>What to share with your recommenders</li>
+        </ul>
+      </div>
+      <div class="module-card">
+        <span class="module-num">Module 08</span>
+        <h3>Supplements &amp; Final Review</h3>
+        <p>Supplemental essays for each school, "Why Us" essays, and a complete checklist for reviewing your application before submitting.</p>
+        <ul class="module-topics">
+          <li>Writing school-specific essays</li>
+          <li>"Why us" essay formula</li>
+          <li>Final submission checklist</li>
+        </ul>
+      </div>
     </div>
-    <div class="module-card">
-      <span class="module-num">Module 02</span>
-      <h3>Profile & Background Sections</h3>
-      <p>The basics of the Common App profile, demographics, and how to fill in your personal information accurately and strategically.</p>
-      <ul class="module-topics">
-        <li>Residency and citizenship sections</li>
-        <li>Family background questions</li>
-        <li>How to answer sensitive questions</li>
-      </ul>
-    </div>
-    <div class="module-card">
-      <span class="module-num">Module 03</span>
-      <h3>Academics & Testing</h3>
-      <p>How to present your GPA, transcripts, and test scores in the best possible light — even if they aren't perfect.</p>
-      <ul class="module-topics">
-        <li>Entering grades and course rigor</li>
-        <li>SAT / ACT reporting strategy</li>
-        <li>Handling course explanations</li>
-      </ul>
-    </div>
-    <div class="module-card">
-      <span class="module-num">Module 04</span>
-      <h3>Activities & Extracurriculars</h3>
-      <p>The activities section is one of the most underutilized parts of the Common App. Learn how to tell your story through what you've done.</p>
-      <ul class="module-topics">
-        <li>Ranking your activities strategically</li>
-        <li>Writing 150-character descriptions that pop</li>
-        <li>Showing leadership and impact</li>
-      </ul>
-    </div>
-    <div class="module-card">
-      <span class="module-num">Module 05</span>
-      <h3>The Personal Essay</h3>
-      <p>The heart of the application. Learn how to choose a topic, find your voice, and write an essay that admissions officers remember.</p>
-      <ul class="module-topics">
-        <li>Breaking down the 7 prompts</li>
-        <li>Brainstorming your unique story</li>
-        <li>Draft, revise, and finalize</li>
-      </ul>
-    </div>
-    <div class="module-card">
-      <span class="module-num">Module 06</span>
-      <h3>Additional Information Section</h3>
-      <p>Most students leave this blank. Learn when and how to use it strategically to address gaps, context, or extra achievements.</p>
-      <ul class="module-topics">
-        <li>When to use vs. leave blank</li>
-        <li>Addressing low grades or gaps</li>
-        <li>Adding accomplishments that didn't fit</li>
-      </ul>
-    </div>
-    <div class="module-card">
-      <span class="module-num">Module 07</span>
-      <h3>Recommenders & School Reports</h3>
-      <p>How to choose the right recommenders, approach them professionally, and set them up to write the strongest letters possible.</p>
-      <ul class="module-topics">
-        <li>Choosing your recommenders wisely</li>
-        <li>How to ask (with templates)</li>
-        <li>What to share with your recommenders</li>
-      </ul>
-    </div>
-    <div class="module-card">
-      <span class="module-num">Module 08</span>
-      <h3>Supplements & Final Review</h3>
-      <p>Supplemental essays for each school, "Why Us" essays, and a complete checklist for reviewing your application before submitting.</p>
-      <ul class="module-topics">
-        <li>Writing school-specific essays</li>
-        <li>"Why us" essay formula</li>
-        <li>Final submission checklist</li>
-      </ul>
-    </div>
+    <div class="curriculum-progress"><div class="curriculum-progress-fill"></div></div>
   </div>
 </section>
 
@@ -730,7 +1153,7 @@
 <section class="pricing" id="pricing">
   <div class="section-header">
     <span class="section-tag" style="color:var(--gold);">Pricing</span>
-    <h2>Simple, one-time pricing.</h2>
+    <h2>Simple, <em>one-time</em> pricing.</h2>
     <p class="section-sub">No subscriptions. Pay once, access forever. Add personalized feedback whenever you're ready.</p>
   </div>
   <div class="pricing-grid">
@@ -739,14 +1162,14 @@
       <span class="pricing-tier">Full Course</span>
       <h3>The Playbook</h3>
       <div class="pricing-amount">
-        <span class="price-num">$35</span>
+        <span class="price-num" data-target="35">35</span>
         <span class="price-label">one time</span>
       </div>
       <p class="pricing-desc">Everything you need to build a standout Common App application from start to finish.</p>
       <ul class="pricing-features">
         <li><span class="feat-check">✓</span> All 8 course modules</li>
         <li><span class="feat-check">✓</span> Lifetime access</li>
-        <li><span class="feat-check">✓</span> Example essays & activity descriptions</li>
+        <li><span class="feat-check">✓</span> Example essays &amp; activity descriptions</li>
         <li><span class="feat-check">✓</span> Revision checklists</li>
         <li><span class="feat-check">✓</span> All future updates included</li>
       </ul>
@@ -756,7 +1179,7 @@
       <span class="pricing-tier">Add-On</span>
       <h3>Essay Review</h3>
       <div class="pricing-amount">
-        <span class="price-num">$15</span>
+        <span class="price-num" data-target="15">15</span>
         <span class="price-label">per essay</span>
       </div>
       <p class="pricing-desc">Submit your personal statement or supplemental essay and get detailed written feedback directly from me.</p>
@@ -772,13 +1195,13 @@
       <span class="pricing-tier">Add-On</span>
       <h3>Short Response Review</h3>
       <div class="pricing-amount">
-        <span class="price-num">$15</span>
+        <span class="price-num" data-target="15">15</span>
         <span class="price-label">per review</span>
       </div>
       <p class="pricing-desc">Get feedback on your activities descriptions, additional info section, or any short-form responses.</p>
       <ul class="pricing-features">
         <li><span class="feat-check">✓</span> Up to 5 short responses</li>
-        <li><span class="feat-check">✓</span> Word count & impact coaching</li>
+        <li><span class="feat-check">✓</span> Word count &amp; impact coaching</li>
         <li><span class="feat-check">✓</span> 48-hour turnaround</li>
         <li><span class="feat-check">✓</span> One round of revisions included</li>
       </ul>
@@ -791,40 +1214,185 @@
 <section class="testimonials" id="testimonials">
   <div class="section-header">
     <span class="section-tag">Student Results</span>
-    <h2>From students who've been there.</h2>
+    <h2>From students who've <em>been there.</em></h2>
     <p class="section-sub">Placeholder testimonials — swap these out with real reviews from students you've helped.</p>
   </div>
-  <div class="testi-grid">
-    <div class="testi-card">
-      <div class="testi-stars">★★★★★</div>
-      <p class="testi-quote">"I had no idea how to write my activities section. After going through Module 4, I completely rewrote it and felt so much more confident about what I submitted."</p>
-      <div class="testi-author">
-        <div class="testi-avatar">AS</div>
-        <div>
-          <p class="testi-name">Alex S.</p>
-          <p class="testi-school">Admitted to [School Name]</p>
+  <div class="testi-marquee-outer">
+    <div class="testi-marquee">
+      <div class="testi-card">
+        <div class="testi-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+        <p class="testi-quote">&#8220;I had no idea how to write my activities section. After Module 4, I rewrote it completely and felt so much more confident.&#8221;</p>
+        <div class="testi-author">
+          <div class="testi-avatar">AS</div>
+          <div>
+            <p class="testi-name">Alex S.</p>
+            <p class="testi-school">Admitted to UC Berkeley</p>
+          </div>
         </div>
       </div>
-    </div>
-    <div class="testi-card">
-      <div class="testi-stars">★★★★★</div>
-      <p class="testi-quote">"The essay feedback was exactly what I needed. My original draft was too vague — after the review I had something I was actually proud of."</p>
-      <div class="testi-author">
-        <div class="testi-avatar">MR</div>
-        <div>
-          <p class="testi-name">Maya R.</p>
-          <p class="testi-school">Admitted to [School Name]</p>
+      <div class="testi-card">
+        <div class="testi-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+        <p class="testi-quote">&#8220;The essay feedback was exactly what I needed. My original draft was too vague — after the review I had something I was proud of.&#8221;</p>
+        <div class="testi-author">
+          <div class="testi-avatar">MR</div>
+          <div>
+            <p class="testi-name">Maya R.</p>
+            <p class="testi-school">Admitted to NYU</p>
+          </div>
         </div>
       </div>
-    </div>
-    <div class="testi-card">
-      <div class="testi-stars">★★★★★</div>
-      <p class="testi-quote">"Worth every penny. I was so stressed about the Common App and this course made it feel manageable. The timeline module alone saved me weeks of confusion."</p>
-      <div class="testi-author">
-        <div class="testi-avatar">JT</div>
-        <div>
-          <p class="testi-name">Jordan T.</p>
-          <p class="testi-school">Admitted to [School Name]</p>
+      <div class="testi-card">
+        <div class="testi-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+        <p class="testi-quote">&#8220;Worth every penny. I was stressed about the Common App and this course made it feel manageable. The timeline module saved me.&#8221;</p>
+        <div class="testi-author">
+          <div class="testi-avatar">JT</div>
+          <div>
+            <p class="testi-name">Jordan T.</p>
+            <p class="testi-school">Admitted to UCLA</p>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card">
+        <div class="testi-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+        <p class="testi-quote">&#8220;I thought my extracurriculars were boring. This course showed me how to frame them as a real story. My counselor was impressed.&#8221;</p>
+        <div class="testi-author">
+          <div class="testi-avatar">SK</div>
+          <div>
+            <p class="testi-name">Sam K.</p>
+            <p class="testi-school">Admitted to University of Michigan</p>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card">
+        <div class="testi-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+        <p class="testi-quote">&#8220;The 'Why Us' section alone was worth the price. I went from writing generic answers to essays that actually said something real.&#8221;</p>
+        <div class="testi-author">
+          <div class="testi-avatar">PN</div>
+          <div>
+            <p class="testi-name">Priya N.</p>
+            <p class="testi-school">Admitted to Georgetown</p>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card">
+        <div class="testi-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+        <p class="testi-quote">&#8220;I thought I needed a private counselor. This course gave me everything I would have paid thousands for — for $35. No brainer.&#8221;</p>
+        <div class="testi-author">
+          <div class="testi-avatar">TM</div>
+          <div>
+            <p class="testi-name">Tyler M.</p>
+            <p class="testi-school">Admitted to USC</p>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card">
+        <div class="testi-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+        <p class="testi-quote">&#8220;Module 2 completely changed how I thought about my personal statement. Stopped trying to impress and started trying to connect.&#8221;</p>
+        <div class="testi-author">
+          <div class="testi-avatar">EL</div>
+          <div>
+            <p class="testi-name">Emma L.</p>
+            <p class="testi-school">Admitted to Carnegie Mellon</p>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card">
+        <div class="testi-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+        <p class="testi-quote">&#8220;I kept putting off starting because I didn't know where to begin. After the first two modules I had a clear plan and structure.&#8221;</p>
+        <div class="testi-author">
+          <div class="testi-avatar">CA</div>
+          <div>
+            <p class="testi-name">Chris A.</p>
+            <p class="testi-school">Admitted to UT Austin</p>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card">
+        <div class="testi-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+        <p class="testi-quote">&#8220;I had no idea how to write my activities section. After Module 4, I rewrote it completely and felt so much more confident.&#8221;</p>
+        <div class="testi-author">
+          <div class="testi-avatar">AS</div>
+          <div>
+            <p class="testi-name">Alex S.</p>
+            <p class="testi-school">Admitted to UC Berkeley</p>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card">
+        <div class="testi-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+        <p class="testi-quote">&#8220;The essay feedback was exactly what I needed. My original draft was too vague — after the review I had something I was proud of.&#8221;</p>
+        <div class="testi-author">
+          <div class="testi-avatar">MR</div>
+          <div>
+            <p class="testi-name">Maya R.</p>
+            <p class="testi-school">Admitted to NYU</p>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card">
+        <div class="testi-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+        <p class="testi-quote">&#8220;Worth every penny. I was stressed about the Common App and this course made it feel manageable. The timeline module saved me.&#8221;</p>
+        <div class="testi-author">
+          <div class="testi-avatar">JT</div>
+          <div>
+            <p class="testi-name">Jordan T.</p>
+            <p class="testi-school">Admitted to UCLA</p>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card">
+        <div class="testi-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+        <p class="testi-quote">&#8220;I thought my extracurriculars were boring. This course showed me how to frame them as a real story. My counselor was impressed.&#8221;</p>
+        <div class="testi-author">
+          <div class="testi-avatar">SK</div>
+          <div>
+            <p class="testi-name">Sam K.</p>
+            <p class="testi-school">Admitted to University of Michigan</p>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card">
+        <div class="testi-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+        <p class="testi-quote">&#8220;The 'Why Us' section alone was worth the price. I went from writing generic answers to essays that actually said something real.&#8221;</p>
+        <div class="testi-author">
+          <div class="testi-avatar">PN</div>
+          <div>
+            <p class="testi-name">Priya N.</p>
+            <p class="testi-school">Admitted to Georgetown</p>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card">
+        <div class="testi-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+        <p class="testi-quote">&#8220;I thought I needed a private counselor. This course gave me everything I would have paid thousands for — for $35. No brainer.&#8221;</p>
+        <div class="testi-author">
+          <div class="testi-avatar">TM</div>
+          <div>
+            <p class="testi-name">Tyler M.</p>
+            <p class="testi-school">Admitted to USC</p>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card">
+        <div class="testi-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+        <p class="testi-quote">&#8220;Module 2 completely changed how I thought about my personal statement. Stopped trying to impress and started trying to connect.&#8221;</p>
+        <div class="testi-author">
+          <div class="testi-avatar">EL</div>
+          <div>
+            <p class="testi-name">Emma L.</p>
+            <p class="testi-school">Admitted to Carnegie Mellon</p>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card">
+        <div class="testi-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+        <p class="testi-quote">&#8220;I kept putting off starting because I didn't know where to begin. After the first two modules I had a clear plan and structure.&#8221;</p>
+        <div class="testi-author">
+          <div class="testi-avatar">CA</div>
+          <div>
+            <p class="testi-name">Chris A.</p>
+            <p class="testi-school">Admitted to UT Austin</p>
+          </div>
         </div>
       </div>
     </div>
@@ -835,47 +1403,46 @@
 <section class="faq" id="faq">
   <div class="section-header">
     <span class="section-tag">FAQs</span>
-    <h2>Questions? Answered.</h2>
+    <h2>Questions? <em>Answered.</em></h2>
   </div>
   <div class="faq-grid">
     <div class="faq-item">
-      <p class="faq-q">Who is this course for?</p>
-      <p class="faq-a">Any high school junior or senior working on their Common App. Whether you're just getting started or already have a draft, you'll find value in every module.</p>
+      <div class="faq-q">Who is this course for?<span class="faq-q-icon">+</span></div>
+      <div class="faq-a-wrap"><p class="faq-a">Any high school junior or senior working on their Common App. Whether you're just getting started or already have a draft, you'll find value in every module.</p></div>
     </div>
     <div class="faq-item">
-      <p class="faq-q">How long do I have access?</p>
-      <p class="faq-a">Lifetime access. Pay once and revisit any module whenever you need it — throughout your senior year and beyond.</p>
+      <div class="faq-q">How long do I have access?<span class="faq-q-icon">+</span></div>
+      <div class="faq-a-wrap"><p class="faq-a">Lifetime access. Pay once and revisit any module whenever you need it — throughout your senior year and beyond.</p></div>
     </div>
     <div class="faq-item">
-      <p class="faq-q">What's included in the essay review add-on?</p>
-      <p class="faq-a">You'll submit your essay and receive detailed written comments within 48 hours, plus one round of follow-up feedback after you revise.</p>
+      <div class="faq-q">What's included in the essay review add-on?<span class="faq-q-icon">+</span></div>
+      <div class="faq-a-wrap"><p class="faq-a">You'll submit your essay and receive detailed written comments within 48 hours, plus one round of follow-up feedback after you revise.</p></div>
     </div>
     <div class="faq-item">
-      <p class="faq-q">Do I need the course to buy the essay review?</p>
-      <p class="faq-a">Nope — the review add-ons are available on their own. That said, the course provides useful context that can make the feedback more actionable.</p>
+      <div class="faq-q">Do I need the course to buy the essay review?<span class="faq-q-icon">+</span></div>
+      <div class="faq-a-wrap"><p class="faq-a">Nope — the review add-ons are available on their own. That said, the course provides useful context that can make the feedback more actionable.</p></div>
     </div>
     <div class="faq-item">
-      <p class="faq-q">What format is the course in?</p>
-      <p class="faq-a">[Describe your format here — e.g. video lessons, written guides, worksheets. Fill this in once you've finalized your content delivery method.]</p>
-    </div>
-    <div class="faq-item">
-      <p class="faq-q">Is there a refund policy?</p>
-      <p class="faq-a">[Add your refund policy here. For example: "Full refund within 7 days if you're not satisfied for any reason."]</p>
+      <div class="faq-q">What format is the course in?<span class="faq-q-icon">+</span></div>
+      <div class="faq-a-wrap"><p class="faq-a">The course is delivered as a series of structured modules you can work through at your own pace, on any device.</p></div>
     </div>
   </div>
 </section>
 
 <!-- FINAL CTA -->
-<section class="final-cta">
-  <h2>Your application is worth the effort.</h2>
-  <p>You only get one shot at this. Make it count with a course built by someone who knows exactly what you're going through.</p>
-  <button class="btn-white" onclick="startCheckout()">Get Started for $35</button>
-  <p class="cta-money-back">One-time payment · Lifetime access · Optional add-ons available</p>
+<section class="final-cta" id="enroll">
+  <div class="final-cta-bg"></div>
+  <div class="final-cta-content">
+    <h2>Your application is <em class="w"><span class="w-inner">worth</span></em> the effort.</h2>
+    <p>You only get one shot at this. Make it count with a course built by someone who knows exactly what you're going through.</p>
+    <button class="btn-white" onclick="startCheckout(event, 'course')">Get Started — $35</button>
+    <p class="cta-money-back">One-time payment &middot; Lifetime access &middot; Optional add-ons available</p>
+  </div>
 </section>
 
 <!-- FOOTER -->
 <footer>
-  <span>© 2025 The Common App Playbook · Antony Wilson</span>
+  <span>&copy; 2025 The Common App Playbook &middot; Antony Wilson</span>
   <div class="footer-links">
     <a href="#">Contact</a>
     <a href="#">Privacy Policy</a>
@@ -883,15 +1450,14 @@
   </div>
 </footer>
 
-
 <script>
+/* ── CHECKOUT ── */
 async function startCheckout(e, type) {
   const btn = (e && e.currentTarget) ? e.currentTarget : event.currentTarget;
   const orig = btn.textContent;
   btn.disabled = true;
   btn.textContent = 'Loading…';
   try {
-    // Pass type as query param — more reliable than body in serverless environments
     const checkoutType = type || 'course';
     const res = await fetch('/api/create-checkout?type=' + checkoutType, {
       method: 'POST',
@@ -907,6 +1473,206 @@ async function startCheckout(e, type) {
     btn.textContent = orig;
   }
 }
+
+/* ── GSAP ANIMATIONS ── */
+document.addEventListener('DOMContentLoaded', function () {
+  if (typeof gsap === 'undefined') return;
+  gsap.registerPlugin(ScrollTrigger);
+
+  /* Hero word-by-word */
+  const heroWords = document.querySelectorAll('.hero h1 .word');
+  if (heroWords.length) {
+    gsap.from(heroWords, {
+      y: '110%', opacity: 0, duration: 0.85, stagger: 0.1, ease: 'power3.out', delay: 0.2
+    });
+  }
+  gsap.from('.hero-tag', { opacity: 0, y: 20, duration: 0.6, delay: 0.1 });
+  gsap.from('.hero-sub',  { opacity: 0, y: 24, duration: 0.7, delay: 0.55 });
+  gsap.from('.hero-actions', { opacity: 0, y: 20, duration: 0.6, delay: 0.75 });
+  gsap.from('.hero-price-note', { opacity: 0, duration: 0.5, delay: 1 });
+  gsap.from('.hero-visual', { opacity: 0, x: 60, duration: 1, ease: 'power2.out', delay: 0.4 });
+
+  /* Stats counter */
+  document.querySelectorAll('.stat-num[data-target]').forEach(function (el) {
+    ScrollTrigger.create({
+      trigger: el, start: 'top 85%', once: true,
+      onEnter: function () {
+        gsap.to({ val: 0 }, {
+          val: parseFloat(el.dataset.target),
+          duration: 1.6, ease: 'power2.out',
+          onUpdate: function () {
+            el.textContent = (this.targets()[0].val % 1 !== 0)
+              ? this.targets()[0].val.toFixed(1)
+              : Math.round(this.targets()[0].val);
+          }
+        });
+      }
+    });
+  });
+
+  /* About section */
+  gsap.from('.about-content .section-tag, .about-content h2', {
+    opacity: 0, y: 30, duration: 0.7, stagger: 0.15,
+    scrollTrigger: { trigger: '.about', start: 'top 70%', once: true }
+  });
+  gsap.from('.about-photo-wrapper', {
+    opacity: 0, x: -40, duration: 0.9, ease: 'power2.out',
+    scrollTrigger: { trigger: '.about', start: 'top 70%', once: true }
+  });
+
+  /* Curriculum horizontal scroll */
+  const track = document.querySelector('.curriculum-track');
+  const container = document.querySelector('.curriculum-scroll-container');
+  if (track && container && window.innerWidth > 960) {
+    const totalScroll = track.scrollWidth - container.offsetWidth;
+    gsap.to(track, {
+      x: -totalScroll,
+      ease: 'none',
+      scrollTrigger: {
+        trigger: '.curriculum',
+        start: 'top top',
+        end: '+=' + (totalScroll + window.innerHeight),
+        pin: true,
+        scrub: 1,
+        anticipatePin: 1,
+      }
+    });
+  }
+
+  /* Pricing cards */
+  gsap.from('.pricing-card', {
+    opacity: 0, y: 40, duration: 0.7, stagger: 0.15,
+    scrollTrigger: { trigger: '.pricing', start: 'top 75%', once: true }
+  });
+
+  /* Testimonials */
+  gsap.from('.testimonials .section-header > *', {
+    opacity: 0, y: 24, duration: 0.6, stagger: 0.12,
+    scrollTrigger: { trigger: '.testi-marquee-outer', start: 'top 80%', once: true }
+  });
+
+  /* FAQ */
+  gsap.from('.faq-item', {
+    opacity: 0, y: 20, duration: 0.5, stagger: 0.08,
+    scrollTrigger: { trigger: '.faq', start: 'top 80%', once: true }
+  });
+
+  /* Final CTA */
+  const ctaWords = document.querySelectorAll('.final-cta h2 .w-inner');
+  if (ctaWords.length) {
+    gsap.from(ctaWords, {
+      y: '110%', opacity: 0, duration: 0.8, stagger: 0.12, ease: 'power3.out',
+      scrollTrigger: { trigger: '.final-cta', start: 'top 75%', once: true }
+    });
+  }
+  gsap.from('.final-cta p, .btn-white, .cta-money-back', {
+    opacity: 0, y: 20, duration: 0.6, stagger: 0.1,
+    scrollTrigger: { trigger: '.final-cta', start: 'top 70%', once: true }
+  });
+});
+
+/* ── TYPING ANIMATION (About bio) ── */
+(function () {
+  var aboutSection = document.getElementById('about');
+  if (!aboutSection) return;
+  var paras = Array.prototype.slice.call(aboutSection.querySelectorAll('.about-bio p'));
+  var creds = Array.prototype.slice.call(aboutSection.querySelectorAll('.credential-list li'));
+  if (!paras.length) return;
+
+  var texts = paras.map(function (p) {
+    var t = p.textContent; p.textContent = ''; p.style.opacity = '0'; return t;
+  });
+  creds.forEach(function (li) { li.style.opacity = '0'; });
+
+  var animated = false;
+  var safetyTimer = setTimeout(function () { if (!animated) revealAll(); }, 5000);
+
+  function revealAll() {
+    animated = true;
+    paras.forEach(function (p, i) { p.style.opacity = '1'; p.textContent = texts[i]; });
+    creds.forEach(function (li) { li.style.opacity = '1'; });
+  }
+
+  function typeText(el, text, speed, onDone) {
+    el.style.opacity = '1';
+    var cursor = document.createElement('span');
+    cursor.className = 'typing-cursor';
+    el.appendChild(cursor);
+    var i = 0;
+    (function tick() {
+      if (i < text.length) { cursor.insertAdjacentText('beforebegin', text[i++]); setTimeout(tick, speed); }
+      else { onDone(cursor); }
+    })();
+  }
+
+  function startAnimation() {
+    if (animated) return;
+    animated = true;
+    clearTimeout(safetyTimer);
+    var SPEED = 13, PAUSE = 380;
+    function next(idx, prevCursor) {
+      if (prevCursor) prevCursor.remove();
+      if (idx >= paras.length) {
+        creds.forEach(function (li, i) {
+          setTimeout(function () { li.style.opacity = '1'; li.style.transform = 'translateX(0)'; }, 120 + i * 190);
+        });
+        return;
+      }
+      typeText(paras[idx], texts[idx], SPEED, function (cursor) {
+        setTimeout(function () { next(idx + 1, cursor); }, PAUSE);
+      });
+    }
+    next(0, null);
+  }
+
+  if ('IntersectionObserver' in window) {
+    var obs = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) { if (e.isIntersecting) { obs.disconnect(); startAnimation(); } });
+    }, { threshold: 0 });
+    obs.observe(aboutSection);
+  } else {
+    startAnimation();
+  }
+})();
+
+/* ── FAQ ACCORDION ── */
+document.querySelectorAll('.faq-item').forEach(function (item) {
+  var q = item.querySelector('.faq-q');
+  var wrap = item.querySelector('.faq-a-wrap');
+  q.addEventListener('click', function () {
+    var isOpen = item.classList.contains('open');
+    document.querySelectorAll('.faq-item.open').forEach(function (o) {
+      o.classList.remove('open');
+      o.querySelector('.faq-a-wrap').style.maxHeight = null;
+    });
+    if (!isOpen) {
+      item.classList.add('open');
+      wrap.style.maxHeight = wrap.scrollHeight + 'px';
+    }
+  });
+});
+
+/* ── PRICE COUNTER ── */
+document.querySelectorAll('.price-num[data-target]').forEach(function (el) {
+  var observer = new IntersectionObserver(function (entries) {
+    if (entries[0].isIntersecting) {
+      observer.disconnect();
+      var target = parseInt(el.dataset.target, 10);
+      var start = 0, step = Math.ceil(target / 30);
+      var t = setInterval(function () {
+        start = Math.min(start + step, target);
+        el.textContent = start;
+        if (start >= target) clearInterval(t);
+      }, 40);
+    }
+  }, { threshold: 0.5 });
+  observer.observe(el);
+});
+
+/* ── NAV SCROLL STATE ── */
+window.addEventListener('scroll', function () {
+  document.querySelector('nav').classList.toggle('scrolled', window.scrollY > 40);
+}, { passive: true });
 </script>
 </body>
 </html>
