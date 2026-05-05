@@ -172,10 +172,57 @@
   .nav-btn-next.complete:hover { background: #2d7a48; }
   .nav-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
+  /* ── Main wrapper ── */
+  .main-wrapper { display: flex; align-items: flex-start; min-width: 0; }
+
+  /* ── Takeaways panel ── */
+  .takeaways-panel {
+    width: 270px;
+    flex-shrink: 0;
+    position: sticky;
+    top: 60px;
+    height: calc(100vh - 60px);
+    overflow-y: auto;
+    padding: 2.5rem 1.75rem;
+    background: var(--cream);
+    border-left: 1px solid var(--border);
+  }
+  .takeaways-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 600;
+    margin-bottom: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .takeaways-list { list-style: none; }
+  .takeaways-list li {
+    font-size: 0.88rem;
+    line-height: 1.6;
+    color: var(--ink);
+    padding: 0.9rem 0;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+  }
+  .takeaways-list li:last-child { border-bottom: none; }
+  .takeaways-list li::before {
+    content: '→';
+    color: var(--accent);
+    flex-shrink: 0;
+    font-size: 0.82rem;
+    margin-top: 0.15rem;
+  }
+
   @media (max-width: 900px) {
     .layout { grid-template-columns: 1fr; }
     .sidebar { position: static; height: auto; }
     .main { padding: 2rem; }
+    .takeaways-panel { display: none; }
   }
 </style>
 </head>
@@ -200,8 +247,11 @@
     <ul class="module-list" id="moduleList"></ul>
   </aside>
 
-  <!-- Main lesson area -->
-  <main class="main" id="mainContent"></main>
+  <!-- Main lesson area + Key Takeaways panel -->
+  <div class="main-wrapper">
+    <main class="main" id="mainContent"></main>
+    <aside class="takeaways-panel" id="takeawaysPanel"></aside>
+  </div>
 </div>
 
 <script>
@@ -672,6 +722,94 @@ const modules = [
   }
 ];
 
+// ── Key Takeaways (per module, per section — indexed to match h2 order) ──────
+const moduleTakeaways = [
+  // Module 1: Introduction & Strategy
+  [
+    ["Your file gets 8–15 minutes max — every section must be instantly readable", "Two to three readers review each file; committee discusses borderline cases", "All sections should reinforce one coherent narrative about who you are"],
+    ["Pillar 1 (Academics): Can you do the work?", "Pillar 2 (Activities): Do you make a difference with your time?", "Pillar 3 (Essays): Who are you beyond the numbers?"],
+    ["Start your personal essay in June — not October", "EA/ED applications should be submitted at least 3 days before the deadline", "Build your college list (8–12 schools) over summer, not during senior year"],
+    ["Starting the essay late is the #1 avoidable mistake", "Generic 'Why Us' essays are the most common supplement failure", "Read your full application as one document before you submit"],
+    ["Write what you'd tell an admissions officer that isn't anywhere else in your application", "List 3–5 people who know you well and write what each would say about you", "This exercise is the foundation of your application narrative — return to it throughout the course"]
+  ],
+  // Module 2: Profile & Background Sections
+  [
+    ["The profile isn't just data entry — it establishes your context for every reader", "Context changes how your entire application is interpreted", "Flag any question where your answer carries context that deserves explanation"],
+    ["Answer citizenship questions accurately — no strategic angle exists here", "International students are often admitted from a separate, smaller pool", "Research financial aid availability for international students school by school"],
+    ["First-gen status opens a door — your essays and activities have to walk through it", "Being first-gen matters only if your application shows what that experience actually shaped", "Audit your whole application: does it reflect the full picture of your life?"],
+    ["Be specific — 'retail manager' not just 'works in retail'", "This helps admissions officers read your academic record with proper context", "Honest answers about your family background only add context, never hurt"],
+    ["Non-traditional family situations should be filled in accurately", "Financial hardship and disruptions belong in the Additional Information section", "Don't leave context unexplained when it could make a meaningful difference"],
+    ["Read each question carefully — they are usually narrowly scoped", "Honesty always — colleges forgive incidents far more than they forgive dishonesty", "If you disclose something: what happened, ownership taken, growth since"],
+    ["Post-2023, race can't be a direct admissions factor — but your identity still comes through your essays", "Report your ethnicity accurately; it matters for scholarships and programs", "Don't check boxes that don't reflect your actual identity"],
+    ["Flag every profile question where context matters", "Write one sentence per flagged item: 'This matters because ___'", "Return to this list when you write your Additional Information section"]
+  ],
+  // Module 3: Academics & Testing
+  [
+    ["Readers ask 4 things: rigor, trend, consistency, and alignment with your stated major", "You can't change your GPA — but you can influence how it's read", "Course selection tells a story; make sure it's the right one"],
+    ["An upward trend matters as much as the final number", "A 3.4 rising from 2.9 tells a better story than a 3.4 in decline", "Unexplained grade drops always invite the worst interpretation — explain them"],
+    ["At selective schools, rigor is often weighted more heavily than GPA alone", "Admissions officers see every course your school offered — they see what you chose", "Take the hardest courses you can genuinely perform well in, not just the hardest ones that exist"],
+    ["At or above 75th percentile: submit. Below 25th: withhold.", "Some 'test-optional' schools still use scores for merit scholarships — read the fine print", "Scores and GPA should work together, not just compensate for each other"],
+    ["Report 4s and 5s always. Report 3s selectively. Leave off 1s and 2s entirely.", "In-major AP scores carry more weight than out-of-field ones", "A pattern of 3s across many APs can subtly undercut your rigor story"],
+    ["Intended major is non-binding at most schools — you can change after enrolling", "List a major if it helps contextualize your transcript and activities for the reader", "Misalignment between your stated major and everything else in your application is noticeable"],
+    ["Write one honest sentence about the story your transcript currently tells", "Look up the middle 50% test range for your top 3 schools via the Common Data Set", "Make a school-specific decision on testing — not a one-size-fits-all one"]
+  ],
+  // Module 4: Activities & Extracurriculars
+  [
+    ["You have 150 characters per description — one tight, purposeful sentence", "Readers ask: does this student go deep, or just wide?", "Depth signals genuine passion; breadth-for-breadth's-sake signals résumé-padding"],
+    ["Most important = most central to your identity, not most impressive to outsiders", "Rank by time invested, impact, and how well the activity fits your overall narrative", "Part-time work and family responsibilities outrank low-commitment clubs every time"],
+    ["Describe what YOU did — not what the activity is. Officers already know what debate team is.", "Formula: action verb + specific role + measurable impact or outcome", "Quantify wherever possible — numbers turn vague claims into concrete ones"],
+    ["Use your specific title, not the activity name — that's already in the category dropdown", "If your official title doesn't capture your actual function, use a descriptive one instead", "List your most senior role if you held multiple positions over time"],
+    ["Choose the most accurate category — officers scan and sort by them", "'Family Responsibilities' is a legitimate and important category — use it if it applies", "Don't bury real-life responsibilities under 'Other'"],
+    ["A focused list of 6 deep involvements beats 10 entries where 4 are clearly filler", "Part-time jobs, independent projects, and self-directed learning all legitimately count", "Capture how you actually spend your time — not just what looks impressive on paper"],
+    ["Add context to any award that isn't nationally known", "A shorter list of strong honors beats a padded list of minor ones", "Use all 5 slots only if you have 5 genuinely meaningful recognitions to fill them"],
+    ["Draft all descriptions in a separate document before entering them in the Common App", "Read all 10 back-to-back: does it tell a story? Show depth? Capture your full life?", "Revise until the answer to all three questions is yes"]
+  ],
+  // Module 5: The Personal Essay
+  [
+    ["The essay is not a summary of achievements — it's the one place a human being comes through", "Admissions officers remember essays where they finish reading and feel like they know someone", "Specific + honest + your own voice = the entire standard"],
+    ["The prompt matters far less than your response — most strong essays fit multiple prompts", "Prompts 1 and 7 are the most open-ended and often produce the strongest essays", "Prompt 2 (overcoming a challenge) is the most commonly chosen — and most commonly botched"],
+    ["The best topics are almost never the 'big moment' — they're small things that reveal something large", "Small subjects force specificity, and specificity is what makes writing memorable", "The right topic is the one you could write three pages about without running out of things to say"],
+    ["Scene-Reflection is the most reliable structure: open in a specific moment, then reflect on its meaning", "The Montage (3–4 connected scenes) works when your story isn't centered on one event", "Your opening line is the most carefully read sentence in your essay — don't waste it"],
+    ["Voice is how you sound when you're being honest with someone you trust — not how you sound in a formal paper", "Read your essay out loud — if a sentence makes you stumble, rewrite it", "If a word doesn't sound like something you'd ever actually say, replace it with one that does"],
+    ["Plan for at least 3–5 rounds of real revision — not proofreading, but actual rewriting", "Draft 2: cut what's vague. Draft 3: read aloud, fix what doesn't sound natural.", "Ask one reader: 'After reading this, do you feel like you know me better?'"],
+    ["Notice how the topic — watching his father fall asleep — is something most students would never write about", "The small-reveals-large structure: one specific image expands into a full philosophy of observation", "The best closings circle back to the opening — they deepen what's already there rather than introduce something new"],
+    ["You don't need a dramatic life story — you need honesty, specificity, and a voice that sounds like no one else", "A structural device (repeated line, recurring image) can make an essay feel intentional and crafted", "The essay that sounds least like a 'college essay' is almost always the strongest one"],
+    ["Do the 20-minute brainstorm — no filtering, no judgment on any idea", "Write the first paragraph of 2–3 of your best candidate topics", "The one that sounds most like you, and least like a college essay, is your direction"]
+  ],
+  // Module 6: Additional Information
+  [
+    ["This is a 650-word free-response field — use it only if something genuinely needs to be said", "'Optional' doesn't mean unimportant — it means no default weight either way", "The only test: does this materially change how an admissions officer understands me or my application?"],
+    ["Use it to explain grade drops, overflow activities, unusual transcripts, or significant life context", "If you've done something notable that doesn't fit in 150 characters, describe it here", "Link to external work online and give enough context for someone outside your field to understand it"],
+    ["Leave it blank if your application is already coherent and complete as it stands", "Officers will not penalize you for leaving this section empty — they'll notice if you pad it unnecessarily", "Do not use it as a second personal essay or to repeat what's already clear elsewhere"],
+    ["Write like a brief memo, not an essay — direct, professional, and efficient", "Bullet points and clear headers are entirely acceptable here", "You have 650 words — you rarely need all of them to make your point"],
+    ["Structure: one sentence on what happened, one on the impact, one to two on what changed", "Factual tone, forward-looking, no self-pity, no defensiveness, no over-explanation", "Officers are far more forgiving of the incident itself than they are of dishonesty or excessive justification"],
+    ["Review your full application: is there anything a reader could misinterpret without more context?", "Is there anything missing that would meaningfully change how they understand you?", "If yes, draft it here. If no, leave it blank — and feel fully confident about that decision"]
+  ],
+  // Module 7: Recommenders & School Reports
+  [
+    ["The best letters are specific, surprising, and human — they tell a story a transcript can't tell", "A letter from someone who knows you deeply always beats one from someone more prestigious", "Officers can tell within the first paragraph whether the recommender actually knows you"],
+    ["Most important criterion: do they know you as a person, not just as a grade?", "At least one letter should come from a teacher in a core academic subject area", "Ask yourself before approaching anyone: could this teacher tell a specific story about me in a letter?"],
+    ["Ask in person — not by email or text", "Use the word 'strong': 'Would you feel comfortable writing a strong letter?'", "Ask in June–July, or no later than the first week of September for fall deadlines"],
+    ["Send a well-organized document: your resume, school list with deadlines, and specific memories from their class", "Sharing specific moments gives the teacher real material to work with — not instructions on what to write", "Share your personal essay once it's drafted so the recommender can complement rather than repeat it"],
+    ["Schedule a 15-minute meeting so your counselor knows you as a person, not just a file", "Bring your activity list, college goals, and areas of personal growth to that meeting", "The more the counselor knows you, the stronger their character rating will be"],
+    ["Always waive your FERPA right to view your recommendation letters", "Officers give more credibility to letters the applicant won't read — the recommender can be fully candid", "A letter written in confidence is more honest, and therefore more useful to your application"],
+    ["Only submit an additional letter if it adds genuinely new information that your other letters don't cover", "A mentor, supervisor, or coach who can speak to a side of you teachers can't is the ideal fit", "A third letter that says the same things as the first two is noise, not signal"],
+    ["List every teacher from the last two years and write one specific sentence about what they'd say about you", "Cross off anyone for whom you can't write a genuinely specific sentence", "The two teachers left at the top of your list are your recommenders — ask them this week"]
+  ],
+  // Module 8: Supplements & Final Review
+  [
+    ["At selective schools, supplements often differentiate finalists — not the personal statement", "Generic 'Why Us' essays signal you haven't done your homework about the school", "A deeply researched supplement shows exactly the intellectual engagement these colleges want"],
+    ["Activity elaboration essays are a gift — go beneath the surface, not just write more words", "Short-answer questions matter: a genuine answer about a book you actually read beats any 'safe' classic", "Community contribution essays are not the place for humility — be specific about what you'll actually add"],
+    ["Component 1: named professors, programs, or courses that are specific to this school only", "Component 2: specific organizations, initiatives, or campus communities you'll actually engage with", "Component 3: why do these specific things connect to your specific goals — not forced, genuinely"],
+    ["Notice the named specifics: 'Sonic Visions course' — this line can't go in a Why Northwestern essay", "TJ connects Brown's specific offerings to who he actually is: film, photography, poetry, journalism", "The essay answers both 'Why Brown?' and 'Why TJ at Brown?' simultaneously — that's the goal"],
+    ["Three scenes labeled explicitly — the structure signals that this is a piece of writing, not a form answer", "The reveal ('not a death, but the loss of my first love') reframes everything the reader just processed", "Show the origin of creativity — the conditions it grew from — rather than just listing what you've created"],
+    ["Never reuse a supplement without fully customizing it — officers know their school extremely well", "Never open with the school's ranking or reputation — start with something specific and genuine", "Read the prompt carefully and answer it directly, then layer in the depth"],
+    ["Read your entire application in one sitting — does it tell one coherent story?", "Check every school-specific field and verify the school name appears correctly everywhere", "Proofread once forward, once backward — backward reading catches errors your brain autocorrects"],
+    ["Verify every deadline on the actual school website, not a third-party list — deadlines change", "Confirm all recommenders have submitted at least 2 weeks before your deadline with a polite follow-up", "Save email confirmations for every application you submit — keep a record"],
+    ["You cannot edit a submitted application — resist the urge to keep revising after hitting submit", "Send brief, factual updates if something significant changes after your submission", "Done is better than perfect — if you've worked through this course seriously, trust the work you've done"]
+  ]
+];
+
 // ── Helpers ──────────────────────────────────────────────────────────────────
 // Split a module's HTML content into sections by <h2> headings
 function splitIntoSections(html) {
@@ -779,6 +917,22 @@ function renderSection() {
       ${nextBtn}
     </div>
   `;
+
+  // Update key takeaways panel
+  const panel = document.getElementById('takeawaysPanel');
+  const takeaways = moduleTakeaways[currentModule] && moduleTakeaways[currentModule][currentSection];
+  if (panel) {
+    if (takeaways && takeaways.length) {
+      panel.innerHTML = `
+        <p class="takeaways-label">🎯 Key Takeaways</p>
+        <ul class="takeaways-list">
+          ${takeaways.map(t => `<li>${t}</li>`).join('')}
+        </ul>
+      `;
+    } else {
+      panel.innerHTML = '';
+    }
+  }
 }
 
 function markComplete(index) {
