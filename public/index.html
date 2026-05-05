@@ -461,55 +461,45 @@ h2 em { font-style: italic; color: var(--accent); }
   margin-top: 0.35rem;
 }
 
-/* ── CURRICULUM (horizontal scroll) ── */
+/* ── CURRICULUM (step-through) ── */
 .curriculum {
   background: var(--bg);
-  padding: 0;
-  overflow: hidden;
+  padding: 5rem 0 4rem;
 }
 .curriculum-intro {
-  padding: 1.2rem 7rem 0.8rem;
+  padding: 0 7rem 2.5rem;
   max-width: 1200px;
 }
-.curriculum-scroll-container {
-  height: calc(100vh - 110px);
-  position: relative;
-  overflow: hidden;
-}
-.curriculum-track {
+.curriculum-step-container {
   display: flex;
-  gap: 1.8rem;
-  padding: 0 7rem;
-  height: 100%;
+  flex-direction: column;
   align-items: center;
-  will-change: transform;
+  padding: 0 2rem 3rem;
 }
 .module-card {
-  flex: 0 0 360px;
+  width: 100%;
+  max-width: 620px;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 12px;
-  padding: 2rem 2rem 1.8rem;
-  transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s;
+  padding: 2.5rem 2.5rem 2rem;
   position: relative;
   overflow: hidden;
-  height: 400px;
+  min-height: 380px;
   display: flex; flex-direction: column;
+  transition: border-color 0.3s, box-shadow 0.3s;
+  animation: moduleIn 0.35s ease;
+}
+@keyframes moduleIn {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 .module-card::before {
   content: '';
   position: absolute; inset: 0;
-  background: radial-gradient(500px circle at var(--mx, 50%) var(--my, 50%), rgba(196,96,42,0.08), transparent 40%);
-  opacity: 0;
-  transition: opacity 0.4s;
+  background: radial-gradient(500px circle at 50% 30%, rgba(196,96,42,0.07), transparent 60%);
   pointer-events: none;
 }
-.module-card:hover {
-  border-color: rgba(196,96,42,0.35);
-  transform: translateY(-4px);
-  box-shadow: 0 20px 60px rgba(0,0,0,0.4);
-}
-.module-card:hover::before { opacity: 1; }
 .module-num {
   font-size: 0.72rem;
   letter-spacing: 0.2em;
@@ -526,17 +516,17 @@ h2 em { font-style: italic; color: var(--accent); }
 }
 .module-card h3 {
   font-family: var(--serif);
-  font-size: 1.35rem;
+  font-size: 1.45rem;
   font-weight: 700;
   margin-bottom: 0.9rem;
   color: var(--text);
   line-height: 1.25;
 }
 .module-card > p {
-  font-size: 0.92rem;
+  font-size: 0.93rem;
   color: var(--text-muted);
   line-height: 1.7;
-  margin-bottom: 1.3rem;
+  margin-bottom: 1.4rem;
   flex-grow: 0;
 }
 .module-topics { list-style: none; margin-top: auto; }
@@ -553,10 +543,45 @@ h2 em { font-style: italic; color: var(--accent); }
   font-size: 0.82rem;
   transition: transform 0.2s;
 }
-.module-card:hover .module-topics li::before { transform: translateX(3px); }
+/* nav row */
+.module-nav {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-top: 1.8rem;
+  width: 100%;
+  max-width: 620px;
+}
+.module-nav-btn {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 8px;
+  padding: 0.65rem 1.4rem;
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s, opacity 0.2s;
+  font-family: var(--sans);
+}
+.module-nav-btn:hover:not(:disabled) { border-color: var(--accent); background: rgba(196,96,42,0.07); }
+.module-nav-btn:disabled { opacity: 0.3; cursor: default; }
+.module-nav-btn.next {
+  margin-left: auto;
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+.module-nav-btn.next:hover:not(:disabled) { background: var(--accent-light); border-color: var(--accent-light); }
+.module-counter {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+}
+/* progress bar */
 .curriculum-progress {
-  position: absolute;
-  bottom: 3rem; left: 7rem; right: 7rem;
+  width: 100%;
+  max-width: 620px;
+  margin-top: 1.4rem;
   height: 2px;
   background: var(--border);
   border-radius: 1px;
@@ -936,16 +961,10 @@ footer a:hover { color: var(--text-muted); }
   .about-grid { grid-template-columns: 1fr; gap: 3rem; }
   .about-photo-wrapper { position: static; }
   .about-photo { aspect-ratio: 4/3; max-height: 320px; }
-  .curriculum-intro { padding: 2rem 2rem 1rem; }
-  .curriculum-scroll-container { height: auto; }
-  .curriculum-track {
-    padding: 0 2rem;
-    flex-wrap: wrap;
-    height: auto;
-    gap: 1.2rem;
-  }
-  .module-card { flex: 1 1 100%; height: auto; min-height: 360px; }
-  .curriculum-progress { display: none; }
+  .curriculum-intro { padding: 2rem 2rem 1.5rem; }
+  .curriculum-step-container { padding: 0 1.2rem 2rem; }
+  .module-card { padding: 1.8rem 1.5rem 1.5rem; }
+  .module-nav { gap: 1rem; }
   .pricing-grid { grid-template-columns: 1fr; }
   nav { padding: 0 1.5rem; }
   .nav-links { gap: 1rem; }
@@ -1055,97 +1074,30 @@ footer a:hover { color: var(--text-muted); }
   </div>
 </section>
 
-<!-- CURRICULUM (horizontal scroll) -->
+<!-- CURRICULUM (step-through) -->
 <section class="curriculum" id="curriculum">
   <div class="curriculum-intro">
     <span class="section-tag">Course Curriculum</span>
     <h2>Every section, <em>covered.</em></h2>
-    <p class="section-sub">The Common App has a lot of moving parts. This course walks through each one with real examples and clear direction — so nothing gets left to guesswork. Scroll →</p>
+    <p class="section-sub">The Common App has a lot of moving parts. This course walks through each one with real examples and clear direction — so nothing gets left to guesswork.</p>
   </div>
-  <div class="curriculum-scroll-container">
-    <div class="curriculum-track">
-      <div class="module-card">
-        <span class="module-num">Module 01</span>
-        <h3>Introduction &amp; Strategy</h3>
-        <p>Overview of the Common App, how colleges use it, and how to approach the whole process strategically from the start.</p>
-        <ul class="module-topics">
-          <li>What colleges are really looking for</li>
-          <li>Timeline &amp; planning your application</li>
-          <li>Common mistakes to avoid early</li>
-        </ul>
-      </div>
-      <div class="module-card">
-        <span class="module-num">Module 02</span>
-        <h3>Profile &amp; Background Sections</h3>
-        <p>The basics of the Common App profile, demographics, and how to fill in your personal information accurately and strategically.</p>
-        <ul class="module-topics">
-          <li>Residency and citizenship sections</li>
-          <li>Family background questions</li>
-          <li>How to answer sensitive questions</li>
-        </ul>
-      </div>
-      <div class="module-card">
-        <span class="module-num">Module 03</span>
-        <h3>Academics &amp; Testing</h3>
-        <p>How to present your GPA, transcripts, and test scores in the best possible light — even if they aren't perfect.</p>
-        <ul class="module-topics">
-          <li>Entering grades and course rigor</li>
-          <li>SAT / ACT reporting strategy</li>
-          <li>Handling course explanations</li>
-        </ul>
-      </div>
-      <div class="module-card">
-        <span class="module-num">Module 04</span>
-        <h3>Activities &amp; Extracurriculars</h3>
-        <p>The activities section is one of the most underutilized parts of the Common App. Learn how to tell your story through what you've done.</p>
-        <ul class="module-topics">
-          <li>Ranking your activities strategically</li>
-          <li>Writing 150-character descriptions that pop</li>
-          <li>Showing leadership and impact</li>
-        </ul>
-      </div>
-      <div class="module-card">
-        <span class="module-num">Module 05</span>
-        <h3>The Personal Essay</h3>
-        <p>The heart of the application. Learn how to choose a topic, find your voice, and write an essay that admissions officers remember.</p>
-        <ul class="module-topics">
-          <li>Breaking down the 7 prompts</li>
-          <li>Brainstorming your unique story</li>
-          <li>Draft, revise, and finalize</li>
-        </ul>
-      </div>
-      <div class="module-card">
-        <span class="module-num">Module 06</span>
-        <h3>Additional Information Section</h3>
-        <p>Most students leave this blank. Learn when and how to use it strategically to address gaps, context, or extra achievements.</p>
-        <ul class="module-topics">
-          <li>When to use vs. leave blank</li>
-          <li>Addressing low grades or gaps</li>
-          <li>Adding accomplishments that didn't fit</li>
-        </ul>
-      </div>
-      <div class="module-card">
-        <span class="module-num">Module 07</span>
-        <h3>Recommenders &amp; School Reports</h3>
-        <p>How to choose the right recommenders, approach them professionally, and set them up to write the strongest letters possible.</p>
-        <ul class="module-topics">
-          <li>Choosing your recommenders wisely</li>
-          <li>How to ask (with templates)</li>
-          <li>What to share with your recommenders</li>
-        </ul>
-      </div>
-      <div class="module-card">
-        <span class="module-num">Module 08</span>
-        <h3>Supplements &amp; Final Review</h3>
-        <p>Supplemental essays for each school, "Why Us" essays, and a complete checklist for reviewing your application before submitting.</p>
-        <ul class="module-topics">
-          <li>Writing school-specific essays</li>
-          <li>"Why us" essay formula</li>
-          <li>Final submission checklist</li>
-        </ul>
-      </div>
+  <div class="curriculum-step-container">
+
+    <!-- Cards (only one visible at a time via JS) -->
+    <div id="module-display"></div>
+
+    <!-- Nav -->
+    <div class="module-nav">
+      <button class="module-nav-btn prev" id="mod-prev" disabled>← Previous</button>
+      <span class="module-counter" id="mod-counter">1 of 8</span>
+      <button class="module-nav-btn next" id="mod-next">Next →</button>
     </div>
-    <div class="curriculum-progress"><div class="curriculum-progress-fill"></div></div>
+
+    <!-- Progress bar -->
+    <div class="curriculum-progress">
+      <div class="curriculum-progress-fill" id="mod-progress"></div>
+    </div>
+
   </div>
 </section>
 
@@ -1520,23 +1472,47 @@ document.addEventListener('DOMContentLoaded', function () {
     scrollTrigger: { trigger: '.about', start: 'top 70%', once: true }
   });
 
-  /* Curriculum horizontal scroll */
-  const track = document.querySelector('.curriculum-track');
-  const container = document.querySelector('.curriculum-scroll-container');
-  if (track && container && window.innerWidth > 960) {
-    const totalScroll = track.scrollWidth - container.offsetWidth;
-    gsap.to(track, {
-      x: -totalScroll,
-      ease: 'none',
-      scrollTrigger: {
-        trigger: '.curriculum',
-        start: 'top top',
-        end: '+=' + (totalScroll + window.innerHeight),
-        pin: true,
-        scrub: 1,
-        anticipatePin: 1,
-      }
-    });
+  /* Curriculum step-through */
+  const modules = [
+    { num: 'Module 01', title: 'Introduction &amp; Strategy', desc: 'Overview of the Common App, how colleges use it, and how to approach the whole process strategically from the start.', topics: ['What colleges are really looking for', 'Timeline &amp; planning your application', 'Common mistakes to avoid early'] },
+    { num: 'Module 02', title: 'Profile &amp; Background Sections', desc: 'The basics of the Common App profile, demographics, and how to fill in your personal information accurately and strategically.', topics: ['Residency and citizenship sections', 'Family background questions', 'How to answer sensitive questions'] },
+    { num: 'Module 03', title: 'Academics &amp; Testing', desc: 'How to present your GPA, transcripts, and test scores in the best possible light — even if they aren\'t perfect.', topics: ['Entering grades and course rigor', 'SAT / ACT reporting strategy', 'Handling course explanations'] },
+    { num: 'Module 04', title: 'Activities &amp; Extracurriculars', desc: 'The activities section is one of the most underutilized parts of the Common App. Learn how to tell your story through what you\'ve done.', topics: ['Ranking your activities strategically', 'Writing 150-character descriptions that pop', 'Showing leadership and impact'] },
+    { num: 'Module 05', title: 'The Personal Essay', desc: 'The heart of the application. Learn how to choose a topic, find your voice, and write an essay that admissions officers remember.', topics: ['Breaking down the 7 prompts', 'Brainstorming your unique story', 'Draft, revise, and finalize'] },
+    { num: 'Module 06', title: 'Additional Information Section', desc: 'Most students leave this blank. Learn when and how to use it strategically to address gaps, context, or extra achievements.', topics: ['When to use vs. leave blank', 'Addressing low grades or gaps', 'Adding accomplishments that didn\'t fit'] },
+    { num: 'Module 07', title: 'Recommenders &amp; School Reports', desc: 'How to choose the right recommenders, approach them professionally, and set them up to write the strongest letters possible.', topics: ['Choosing your recommenders wisely', 'How to ask (with templates)', 'What to share with your recommenders'] },
+    { num: 'Module 08', title: 'Supplements &amp; Final Review', desc: 'Supplemental essays for each school, "Why Us" essays, and a complete checklist for reviewing your application before submitting.', topics: ['Writing school-specific essays', '"Why us" essay formula', 'Final submission checklist'] },
+  ];
+
+  var currentMod = 0;
+  var display = document.getElementById('module-display');
+  var prevBtn  = document.getElementById('mod-prev');
+  var nextBtn  = document.getElementById('mod-next');
+  var counter  = document.getElementById('mod-counter');
+  var progress = document.getElementById('mod-progress');
+
+  function renderModule(idx) {
+    var m = modules[idx];
+    display.innerHTML =
+      '<div class="module-card">' +
+        '<span class="module-num">' + m.num + '</span>' +
+        '<h3>' + m.title + '</h3>' +
+        '<p>' + m.desc + '</p>' +
+        '<ul class="module-topics">' +
+          m.topics.map(function(t){ return '<li>' + t + '</li>'; }).join('') +
+        '</ul>' +
+      '</div>';
+    counter.textContent = (idx + 1) + ' of ' + modules.length;
+    progress.style.width = ((idx + 1) / modules.length * 100) + '%';
+    prevBtn.disabled = idx === 0;
+    nextBtn.disabled = idx === modules.length - 1;
+    nextBtn.textContent = idx === modules.length - 1 ? 'Done ✓' : 'Next →';
+  }
+
+  if (display) {
+    renderModule(0);
+    prevBtn.addEventListener('click', function() { if (currentMod > 0) { currentMod--; renderModule(currentMod); } });
+    nextBtn.addEventListener('click', function() { if (currentMod < modules.length - 1) { currentMod++; renderModule(currentMod); } });
   }
 
   /* Pricing cards */
