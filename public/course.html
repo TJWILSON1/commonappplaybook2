@@ -68,7 +68,13 @@
   .module-title { flex: 1; line-height: 1.3; }
 
   /* ── Main content ── */
-  .main { padding: 3rem 4rem; max-width: 800px; }
+  .main { padding: 3rem 5rem; max-width: none; width: 100%; }
+
+  /* ── Section progress dots ── */
+  .sec-dots { display: flex; align-items: center; gap: 6px; }
+  .sec-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border); transition: all 0.2s; flex-shrink: 0; }
+  .sec-dot.active { background: var(--accent); transform: scale(1.25); }
+  .sec-dot.done { background: #3a9a5c; }
   .lesson-header { margin-bottom: 2.5rem; }
   .lesson-tag {
     font-size: 0.72rem; letter-spacing: 0.15em; text-transform: uppercase;
@@ -666,14 +672,36 @@ const modules = [
   }
 ];
 
+// ── Helpers ──────────────────────────────────────────────────────────────────
+// Split a module's HTML content into sections by <h2> headings
+function splitIntoSections(html) {
+  const div = document.createElement('div');
+  div.innerHTML = html.trim();
+  const nodes = Array.from(div.childNodes);
+  const sections = [];
+  let current = null;
+  nodes.forEach(node => {
+    if (node.nodeType === 1 && node.tagName === 'H2') {
+      if (current) sections.push(current);
+      current = { title: node.textContent.trim(), html: '' };
+    } else if (current) {
+      current.html += node.outerHTML || '';
+    }
+  });
+  if (current) sections.push(current);
+  return sections;
+}
+
 // ── State ────────────────────────────────────────────────────────────────────
 let currentModule = 0;
+let currentSection = 0;
+let moduleSections = [];
 let completed = JSON.parse(localStorage.getItem('completedModules') || '[]');
 
 // ── Init ─────────────────────────────────────────────────────────────────────
 function init() {
   renderSidebar();
-  loadModule(currentModule);
+  loadModule(0);
   updateProgress();
 }
 
@@ -690,34 +718,67 @@ function renderSidebar() {
 
 function loadModule(index) {
   currentModule = index;
-  const m = modules[index];
-  const isLast = index === modules.length - 1;
-  const isCompleted = completed.includes(index);
+  currentSection = 0;
+  moduleSections = splitIntoSections(modules[index].content);
+  renderSection();
+  renderSidebar();
+  window.scrollTo(0, 0);
+}
+
+function loadSection(index) {
+  currentSection = index;
+  renderSection();
+  window.scrollTo(0, 0);
+}
+
+function renderSection() {
+  const m = modules[currentModule];
+  const sec = moduleSections[currentSection];
+  const isLastSection = currentSection === moduleSections.length - 1;
+  const isLastModule = currentModule === modules.length - 1;
+  const isCompleted = completed.includes(currentModule);
+
+  const dots = moduleSections.map((_, i) =>
+    `<span class="sec-dot ${i === currentSection ? 'active' : i < currentSection ? 'done' : ''}"></span>`
+  ).join('');
+
+  const prevOnClick = currentSection > 0
+    ? `loadSection(${currentSection - 1})`
+    : currentModule > 0
+      ? `loadModule(${currentModule - 1})`
+      : '';
+  const prevDisabled = currentSection === 0 && currentModule === 0 ? 'disabled' : '';
+  const prevLabel = currentSection > 0 ? '← Previous' : '← Previous Module';
+
+  let nextBtn;
+  if (isLastSection) {
+    if (isLastModule) {
+      nextBtn = `<button class="nav-btn nav-btn-next complete" onclick="markComplete(${currentModule})">
+        ${isCompleted ? '✓ Course Complete!' : 'Complete Course ✓'}
+      </button>`;
+    } else {
+      nextBtn = `<button class="nav-btn nav-btn-next" onclick="markComplete(${currentModule})">
+        ${isCompleted ? 'Next Module →' : 'Complete & Next Module →'}
+      </button>`;
+    }
+  } else {
+    nextBtn = `<button class="nav-btn nav-btn-next" onclick="loadSection(${currentSection + 1})">
+      Next Section →
+    </button>`;
+  }
 
   document.getElementById('mainContent').innerHTML = `
     <div class="lesson-header">
-      <span class="lesson-tag">${m.tag} of 8</span>
-      <h1>${m.title}</h1>
-      <p>${m.intro}</p>
+      <span class="lesson-tag">${m.tag} of 8 &nbsp;·&nbsp; Section ${currentSection + 1} of ${moduleSections.length}</span>
+      <h1>${sec.title}</h1>
     </div>
-    <div class="lesson-body">${m.content}</div>
+    <div class="lesson-body">${sec.html}</div>
     <div class="lesson-footer">
-      <button class="nav-btn nav-btn-prev" onclick="loadModule(${index - 1})" ${index === 0 ? 'disabled' : ''}>
-        ← Previous
-      </button>
-      ${isLast
-        ? `<button class="nav-btn nav-btn-next complete" onclick="markComplete(${index})">
-            ${isCompleted ? '✓ Course Complete!' : 'Complete Course ✓'}
-           </button>`
-        : `<button class="nav-btn nav-btn-next" onclick="markComplete(${index})">
-            ${isCompleted ? 'Next →' : 'Mark Complete & Continue →'}
-           </button>`
-      }
+      <button class="nav-btn nav-btn-prev" onclick="${prevOnClick}" ${prevDisabled}>${prevLabel}</button>
+      <div class="sec-dots">${dots}</div>
+      ${nextBtn}
     </div>
   `;
-
-  renderSidebar();
-  window.scrollTo(0, 0);
 }
 
 function markComplete(index) {
